@@ -2,11 +2,14 @@
 import { Input } from '@/components/ui/input';
 import { cn, formatFileSize, isTextReadable } from '@/lib/utils';
 import { CloudUpload, FileIcon, XIcon } from 'lucide-react';
-import React from 'react';
+import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useAtom } from 'jotai';
 import { filesToBeUploaded } from '@/lib/jotai/atoms';
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
+import { getFileIconImage } from '@/lib/functions';
+import { useUploadThing } from '@/lib/uploadthing';
 
 export default function UploadSection({
   setTextContent,
@@ -14,24 +17,24 @@ export default function UploadSection({
   setTextContent: (value: string) => void;
 }) {
   const [currentFiles, setCurrentFiles] = useAtom(filesToBeUploaded);
-
   const onDrop = (acceptedFiles: File[]) => {
     //
     setCurrentFiles([...currentFiles, ...acceptedFiles]);
 
     // console.log(acceptedFiles);
-    const reader = new FileReader();
-    reader.onload = () => {
-      setTextContent(typeof reader.result === 'string' ? reader.result : '');
-    };
+    // const reader = new FileReader();
+    // reader.onload = () => {
+    //   setTextContent(typeof reader.result === 'string' ? reader.result : '');
+    // };
   };
   const { getInputProps, isDragActive, getRootProps } = useDropzone({ onDrop });
+
   return (
     <div className='mx-auto max-w-3xl'>
       <div
         {...getRootProps()}
         className={cn(
-          `border-muted-foreground/75 mx-auto flex h-32 w-full cursor-pointer items-center justify-center rounded-2xl border-2 border-dashed transition-colors`,
+          `border-muted-foreground/75 hover:border-primary/75 mx-auto flex h-36 w-full cursor-pointer items-center justify-center rounded-2xl border-2 border-dashed transition-colors`,
           isDragActive
             ? 'border-primary text-primary bg-primary/5'
             : 'text-muted-foreground',
@@ -50,14 +53,16 @@ export default function UploadSection({
       <b className='my-1 block font-semibold'>
         {currentFiles.length === 0 ? '' : 'Selected Files'}
       </b>
-      <ul className='mx-auto flex max-w-3xl flex-col gap-3'>
+      <ul className='mx-auto flex w-full flex-col gap-3'>
         {currentFiles.map((value, index) => (
           <li
             key={index}
             className='flex flex-row items-center justify-start gap-3 truncate rounded-md border px-3 py-4'
           >
-            <div className='rounded-sm border p-2'>
-              <FileIcon size={24} />
+            <div className='rounded-sm'>
+              {/* <FileIcon size={24} /> */}
+              <Image src={getFileIconImage(value)} alt={value.type} />
+              <p className='mx-auto text-center text-xs'>{``}</p>
             </div>
             <div className='flex w-full flex-row items-center justify-between gap-1'>
               <div className='flex flex-col justify-between'>

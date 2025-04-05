@@ -27,6 +27,9 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RefreshCcw } from 'lucide-react';
+import { useUploadThing } from '@/lib/uploadthing';
+import { useAtom } from 'jotai';
+import { filesToBeUploaded } from '@/lib/jotai/atoms';
 
 const formSchema = z.object({
   visibility: z.union([z.literal('public'), z.literal('private')]),
@@ -41,8 +44,19 @@ export default function UploadDefault() {
     password: '',
   });
 
+  const [currentFiles] = useAtom(filesToBeUploaded);
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  const { startUpload, isUploading } = useUploadThing('publicFileUploader', {
+    onClientUploadComplete: (res) => {
+      // console.log(res);
+    },
+    onUploadProgress: (p) => setUploadProgress(p),
+  });
+
   return (
     <form onSubmit={(e) => e.preventDefault()}>
+      <b>{uploadProgress}</b>
       <div className='relative flex w-full flex-col items-start justify-center gap-14 lg:flex-row lg:gap-5'>
         <div className='block w-full lg:w-3/4'>
           <UploadUi />
@@ -135,7 +149,14 @@ export default function UploadDefault() {
             </div>
           </Label>
 
-          <Button className='w-full'>Create New Vault</Button>
+          <Button
+            onClick={() => {
+              startUpload(currentFiles);
+            }}
+            className='w-full'
+          >
+            Create New Vault
+          </Button>
         </div>
       </div>
     </form>

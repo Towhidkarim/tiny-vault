@@ -12,11 +12,11 @@ export default function UploadUi() {
   return (
     <>
       <UploadSection setTextContent={setTextContent} />
-      <div className='flex w-full flex-col items-center justify-center gap-5'>
+      <div className='mx-auto flex w-full max-w-3xl flex-col items-center justify-center gap-5'>
         <br />
         <DividerWithText text='Or' className='mx-auto w-44' />
-        <div className='mx-auto block w-full max-w-3xl'>
-          <span className='font-semibold'>Paste your text here</span>
+        <div className='mx-auto block w-full'>
+          <p className='my-2 font-semibold'>Edit your text here</p>
           {/* <Textarea
             ref={textAreaRef}
             placeholder='Your text here...'
