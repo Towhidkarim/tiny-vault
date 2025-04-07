@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { cn, generateRandomString } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { useQuery } from '@tanstack/react-query';
 import {
   Form,
   FormControl,
@@ -30,6 +31,7 @@ import { RefreshCcw } from 'lucide-react';
 import { useUploadThing } from '@/lib/uploadthing';
 import { useAtom } from 'jotai';
 import { filesToBeUploaded } from '@/lib/jotai/atoms';
+import { finalizeVaultCreation, initiateVaultCreation } from '@/app/actions';
 
 const formSchema = z.object({
   visibility: z.union([z.literal('public'), z.literal('private')]),
@@ -53,6 +55,16 @@ export default function UploadDefault() {
     },
     onUploadProgress: (p) => setUploadProgress(p),
   });
+
+  const onSubmitTrial = async () => {
+    const initialization = await initiateVaultCreation();
+    if (initialization.succes) console.log(initialization.token);
+    else return;
+    const finalization = await finalizeVaultCreation({
+      identificationToken: initialization.token ?? '',
+    });
+    console.log(finalization);
+  };
 
   return (
     <form onSubmit={(e) => e.preventDefault()}>
@@ -150,8 +162,9 @@ export default function UploadDefault() {
           </Label>
 
           <Button
-            onClick={() => {
-              startUpload(currentFiles);
+            onClick={async () => {
+              // startUpload(currentFiles);
+              await onSubmitTrial();
             }}
             className='w-full'
           >

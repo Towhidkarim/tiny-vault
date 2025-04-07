@@ -28,9 +28,12 @@ export function generateRandomString(length: number = 6) {
 }
 
 export function isTextReadable(file: File) {
-  const extension = file.type;
-  const plainText = extension.startsWith('text/');
-  const formatSupported = ALLOWED_TEXT_EXTENSIONS.has(extension);
+  const extension = file.name.split('.').pop();
+  const plainText = file.type.startsWith('text/');
+  const formatSupported =
+    typeof extension === 'string'
+      ? ALLOWED_TEXT_EXTENSIONS.has(extension)
+      : false;
 
   // const fileReader = new FileReader();
   // fileReader.onload = () => {
