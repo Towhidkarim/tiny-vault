@@ -23,3 +23,11 @@ export const ALLOWED_TEXT_EXTENSIONS = new Set(
         "srt", "sub", "vtt", "po", "pot", "mo", "dic", "aff", "lst"
     ]
 )
+
+export const redisKeys = {
+  publicValut: 'publc-vault',
+} as const;
+
+export const cookieKeys = {
+  publicVaultCookie: 'public-valut-cookie',
+} as const;

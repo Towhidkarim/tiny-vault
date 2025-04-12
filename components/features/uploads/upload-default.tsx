@@ -31,7 +31,10 @@ import { RefreshCcw } from 'lucide-react';
 import { useUploadThing } from '@/lib/uploadthing';
 import { useAtom } from 'jotai';
 import { filesToBeUploaded } from '@/lib/jotai/atoms';
-import { finalizeVaultCreation, initiateVaultCreation } from '@/app/actions';
+import {
+  finalizePublicVaultCreation,
+  inititePublicVaultCreation,
+} from '@/app/actions';
 
 const formSchema = z.object({
   visibility: z.union([z.literal('public'), z.literal('private')]),
@@ -53,17 +56,20 @@ export default function UploadDefault() {
     onClientUploadComplete: (res) => {
       // console.log(res);
     },
-    onUploadProgress: (p) => setUploadProgress(p),
+    onUploadProgress: async (p) => {
+      setUploadProgress(p);
+      if (p >= 100) {
+        const finalization = await finalizePublicVaultCreation();
+        console.log(finalization);
+      }
+    },
   });
 
   const onSubmitTrial = async () => {
-    const initialization = await initiateVaultCreation();
+    const initialization = await inititePublicVaultCreation();
     if (initialization.succes) console.log(initialization.token);
     else return;
-    const finalization = await finalizeVaultCreation({
-      identificationToken: initialization.token ?? '',
-    });
-    console.log(finalization);
+    startUpload(currentFiles);
   };
 
   return (

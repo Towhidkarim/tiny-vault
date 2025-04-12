@@ -1,6 +1,18 @@
 import { createUploadthing, type FileRouter } from 'uploadthing/next';
 import { UploadThingError } from 'uploadthing/server';
-import { ALLOWED_TEXT_EXTENSIONS } from '@/lib/constants';
+import {
+  ALLOWED_TEXT_EXTENSIONS,
+  cookieKeys,
+  redisKeys,
+} from '@/lib/constants';
+import useFileRemoteCache from '@/lib/hooks/useFileRemoteCache';
+import { TFilesTable } from '@/db/schema';
+import {
+  generateDeviceImprint,
+  validateToken,
+  verifyDeviceImprint,
+  verifyIdentifierToken,
+} from '@/lib/auth/identification';
 
 const f = createUploadthing();
 
@@ -30,22 +42,42 @@ export const ourFileRouter = {
   })
     // Set permissions and file types for this FileRoute
     .middleware(async ({ req }) => {
-      // This code runs on your server before upload
-      const user = await auth(req);
+      const cookies = req.cookies;
+      const forwarded = req.headers.get('x-forwarded-for');
+      if (!forwarded) throw new UploadThingError('No IP address found');
+      const ip = forwarded.split(',')[0];
 
-      // If you throw, the user will not be able to upload
-      if (!user) throw new UploadThingError('Unauthorized');
+      console.log('Client IP in UploadThing middleware:', ip);
+      console.log(ip);
+
+      const token = cookies.get(cookieKeys.publicVaultCookie)?.value;
+      if (token === undefined) throw new UploadThingError('Unauthorized');
+
+      const verificationResult = await verifyIdentifierToken(token);
+      if (verificationResult.verified) return { passed: true };
+      else throw new UploadThingError('Unauthorized');
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { userId: user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
       //   console.log('Upload complete for userId:', metadata.userId);
       //   console.log('file url', file.ufsUrl);
-
+      const { put } = await useFileRemoteCache<TFilesTable>();
+      put({
+        key: redisKeys.publicValut,
+        data: {
+          id: file.key,
+          fileName: file.name,
+          fileType: 'other',
+          fileID: file.key,
+          createdAt: Date.now().toString(),
+          fileSize: file.size,
+          fileURL: file.ufsUrl,
+        },
+      });
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
-      return { uploadedBy: metadata.userId, fileUrl: file.ufsUrl };
+      return { fileKey: file.key };
     }),
 } satisfies FileRouter;
 

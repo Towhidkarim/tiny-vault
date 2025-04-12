@@ -12,7 +12,8 @@ export const filesTable = sqliteTable('tv_files', {
   fileID: text('fileID').notNull(),
   fileURL: text('fileURL').notNull(),
   fileSize: numeric({ mode: 'number' }).notNull(),
-  createdAt: text('createdAt')
-    .default(sql`(current_timestamp)`)
-    .notNull(),
+  createdAt: text('createdAt').default(sql`(current_timestamp)`),
 });
+export type TFilesTable = typeof filesTable.$inferSelect;
+
+export const vaultsTable = sqliteTable('tv_vaults', {});

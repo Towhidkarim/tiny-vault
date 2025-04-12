@@ -1,6 +1,8 @@
+import 'server-only';
 import { headers } from 'next/headers';
 import jwt from 'jsonwebtoken';
 import crypto, { hash } from 'crypto';
+import { SignJWT, jwtVerify } from 'jose';
 
 type TTokenPayload = {
   headerImprint: string;
@@ -42,22 +44,21 @@ export function verifyDeviceImprint(headers: Headers, givenImprint: string) {
 }
 
 //generate jwt
-export function generateIdentifierToken({
+export async function generateIdentifierToken({
   headerImprint,
   uniqueID,
 }: {
   headerImprint: string;
   uniqueID: string;
 }) {
-  const token = jwt.sign(
-    {
-      headerImprint,
-      uniqueID,
-    },
-    SECRET,
-  );
+  const encodedSecret = new TextEncoder().encode(SECRET);
+  const token = new SignJWT({ headerImprint, uniqueID })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .sign(encodedSecret);
 
-  return token;
+  const res = await token;
+  return res;
 }
 
 type TVerificationResult =
@@ -68,14 +69,31 @@ type TVerificationResult =
   | { verified: false; errorMessage: string };
 
 //verify jwt and get the payload
-export function verifyIdentifierToken(token: string): TVerificationResult {
+export async function verifyIdentifierToken(
+  token: string,
+): Promise<TVerificationResult> {
   try {
-    const result = jwt.verify(token, SECRET) as TTokenPayload;
-    return { verified: true, result };
+    const { payload } = await jwtVerify(
+      token,
+      new TextEncoder().encode(SECRET),
+      { algorithms: ['HS256'] },
+    );
+    return { verified: true, result: payload as TTokenPayload };
   } catch (error) {
     return {
       verified: false,
       errorMessage: 'Unable to verify authorization token',
     };
   }
+}
+
+export async function validateToken(token: string, headers: Headers) {
+  const tokenData = await verifyIdentifierToken(token);
+  if (!tokenData.verified) return false;
+  const imprintVerified = verifyDeviceImprint(
+    headers,
+    tokenData.result.headerImprint,
+  );
+  if (!imprintVerified) return false;
+  return true;
 }
