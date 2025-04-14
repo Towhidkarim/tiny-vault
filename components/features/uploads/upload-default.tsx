@@ -1,11 +1,11 @@
 'use client';
+
 import { toast } from 'sonner';
-import { Controller, useForm } from 'react-hook-form';
+import { set, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { cn, generateRandomString } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { useQuery } from '@tanstack/react-query';
 import {
   Form,
   FormControl,
@@ -15,6 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { useQuery } from '@tanstack/react-query';
 import {
   Select,
   SelectContent,
@@ -35,149 +36,196 @@ import {
   finalizePublicVaultCreation,
   inititePublicVaultCreation,
 } from '@/app/actions';
+import { Textarea } from '@/components/ui/textarea';
 
 const formSchema = z.object({
+  vaultName: z.string().min(1).max(50),
+  vaultDescription: z.string().max(200).optional(),
   visibility: z.union([z.literal('public'), z.literal('private')]),
   passwordEnabled: z.boolean(),
-  password: z.string(),
+  password: z.string().min(4).max(8).optional(),
 });
 
 export default function UploadDefault() {
-  const [formData, setFormData] = useState<z.infer<typeof formSchema>>({
-    visibility: 'private',
-    passwordEnabled: false,
-    password: '',
-  });
-
   const [currentFiles] = useAtom(filesToBeUploaded);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [vaultCreationState, setVaultCreationState] = useState<
+    'passive' | 'initialized' | 'uploading' | 'finalizing'
+  >('passive');
 
-  const { startUpload, isUploading } = useUploadThing('publicFileUploader', {
-    onClientUploadComplete: (res) => {
-      // console.log(res);
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      vaultName: '',
+      vaultDescription: '',
+      visibility: 'public',
+      passwordEnabled: false,
+      password: '',
     },
-    onUploadProgress: async (p) => {
-      setUploadProgress(p);
-      if (p >= 100) {
-        const finalization = await finalizePublicVaultCreation();
-        console.log(finalization);
+  });
+  const [passwordEnabled, setPasswordEnabled] = useState(false);
+  // const passwordEnabled = form.watch('passwordEnabled', false);
+  const { startUpload, isUploading } = useUploadThing('publicFileUploader', {
+    onUploadProgress: async (progress) => {
+      setUploadProgress(progress);
+      if (progress >= 100 && !isUploading) {
+        setVaultCreationState('uploading');
+        await finalizePublicVaultCreation();
       }
     },
   });
 
-  const onSubmitTrial = async () => {
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
     const initialization = await inititePublicVaultCreation();
-    if (initialization.succes) console.log(initialization.token);
-    else return;
-    startUpload(currentFiles);
+    if (initialization.succes) {
+      startUpload(currentFiles);
+    }
   };
 
   return (
-    <form onSubmit={(e) => e.preventDefault()}>
-      <b>{uploadProgress}</b>
-      <div className='relative flex w-full flex-col items-start justify-center gap-14 lg:flex-row lg:gap-5'>
-        <div className='block w-full lg:w-3/4'>
-          <UploadUi />
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <b>{uploadProgress}</b>
+        <div className='relative flex w-full flex-col items-start justify-center gap-14 lg:flex-row lg:gap-5'>
+          <div className='block w-full lg:w-3/4'>
+            <UploadUi />
+          </div>
+          <div className='border-muted sticky top-10 flex w-full flex-col gap-5 rounded-2xl border p-4 lg:w-1/4'>
+            <FormField
+              control={form.control}
+              name='vaultName'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Vault Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} type='text' placeholder='Vault Name' />
+                  </FormControl>
+                  <FormMessage />
+                  <FormDescription />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='vaultDescription'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Vault Description
+                    <span className='text-xs'>(Optional)</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      placeholder='Vault Description'
+                      className='max-h-24'
+                    />
+                  </FormControl>
+                  <FormMessage />
+                  <FormDescription />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='visibility'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Visibility</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <SelectTrigger className='w-full'>
+                      <SelectValue placeholder='Select Visibility' />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value='public'>Public</SelectItem>
+                      <SelectItem value='private'>Private</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <span className='text-muted-foreground ml-2 text-xs font-normal'>
+                    Private Vaults won't appear on public searches
+                  </span>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='passwordEnabled'
+              render={({ field }) => (
+                <FormItem>
+                  <div className='has-checked:bg-primary/5 has-checked:border-primary flex flex-row items-start justify-start gap-2 space-y-1 rounded-md border p-4 leading-none'>
+                    <FormControl>
+                      <Checkbox
+                        id='passwordEnabled'
+                        checked={field.value}
+                        onCheckedChange={(value) => {
+                          field.onChange(value);
+                          setPasswordEnabled(!!value);
+                          if (value) {
+                            form.setValue('password', generateRandomString());
+                          }
+                        }}
+                      />
+                    </FormControl>
+                    <FormLabel
+                      htmlFor='passwordEnabled'
+                      className='block cursor-pointer'
+                    >
+                      Enable Password Protection
+                      <span className='text-muted-foreground mt-1 block text-xs font-normal'>
+                        Setting up a Password means the contents of the vault
+                        won't be accessible without the password
+                      </span>
+                    </FormLabel>
+                  </div>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='password'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <div className='flex w-full flex-row gap-1'>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        onFocus={(e) => e.target.select()}
+                        disabled={!passwordEnabled}
+                        placeholder='Password'
+                        type='text'
+                      />
+                    </FormControl>
+                    <Button
+                      type='button'
+                      disabled={!passwordEnabled}
+                      onClick={() =>
+                        form.setValue('password', generateRandomString())
+                      }
+                      variant='outline'
+                      size='icon'
+                      className='top-0 right-3'
+                    >
+                      <RefreshCcw size={10} />
+                    </Button>
+                  </div>
+                  <FormMessage />
+                  <FormDescription />
+                </FormItem>
+              )}
+            />
+
+            <Button type='submit' className='w-full'>
+              Create New Vault
+            </Button>
+          </div>
         </div>
-        <div className='border-muted sticky top-10 flex max-h-96 w-full flex-col gap-5 rounded-2xl border p-4 lg:w-1/4'>
-          <Label className='flex flex-col items-start'>
-            Visibility
-            <Select
-              defaultValue='public'
-              onValueChange={(value) => {
-                if (value === 'public' || value === 'private')
-                  setFormData((current) => ({ ...current, visibility: value }));
-                else throw Error('Unsupported Visibility Type');
-              }}
-            >
-              <SelectTrigger className='w-full'>
-                <SelectValue placeholder='Select Visibility' />
-              </SelectTrigger>
-
-              <SelectContent>
-                <SelectItem value='public'>Public</SelectItem>
-                <SelectItem value='private'>Private</SelectItem>
-              </SelectContent>
-            </Select>
-            <span className='text-muted-foreground ml-2 text-xs font-normal'>
-              Private Vaults won't appear on public searches
-            </span>
-          </Label>
-
-          <Label className='block cursor-pointer'>
-            <div className='has-checked:bg-primary/5 has-checked:border-primary flex flex-row items-start justify-start gap-2 space-y-1 rounded-md border p-4 leading-none'>
-              <Checkbox
-                onCheckedChange={(value) =>
-                  setFormData((current) => ({
-                    ...current,
-                    passwordEnabled: !!value,
-                    password:
-                      current.password === '' && !!value
-                        ? generateRandomString()
-                        : current.password,
-                  }))
-                }
-              />
-              <p className=''>
-                Enable Password Protection
-                <span className='text-muted-foreground mt-1 block text-xs font-normal'>
-                  Setting up a Password means the contents of the vault won't be
-                  accessible without the passord
-                </span>
-              </p>
-            </div>
-          </Label>
-
-          <Label className='has-disabled:text-muted-foreground relative flex flex-col items-start gap-1 has-disabled:cursor-not-allowed'>
-            Password
-            <div className='flex w-full flex-row gap-1'>
-              <Input
-                className=''
-                onFocus={(e) => e.target.select()}
-                value={formData.password}
-                onChange={(e) =>
-                  setFormData((current) => ({
-                    ...current,
-                    password:
-                      e.target.value.length <= 8
-                        ? e.target.value
-                        : current.password,
-                  }))
-                }
-                min={3}
-                max={8}
-                disabled={!formData.passwordEnabled}
-                placeholder='Password'
-                type='text'
-              />
-              <Button
-                disabled={!formData.passwordEnabled}
-                onClick={() =>
-                  setFormData((current) => ({
-                    ...current,
-                    password: generateRandomString(),
-                  }))
-                }
-                variant='outline'
-                size='icon'
-                className='top-0 right-3'
-              >
-                <RefreshCcw size={10} />
-              </Button>
-            </div>
-          </Label>
-
-          <Button
-            onClick={async () => {
-              // startUpload(currentFiles);
-              await onSubmitTrial();
-            }}
-            className='w-full'
-          >
-            Create New Vault
-          </Button>
-        </div>
-      </div>
-    </form>
+      </form>
+    </Form>
   );
 }

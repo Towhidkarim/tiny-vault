@@ -13,6 +13,7 @@ import {
   verifyDeviceImprint,
   verifyIdentifierToken,
 } from '@/lib/auth/identification';
+import { getFileType } from '@/lib/utils';
 
 const f = createUploadthing();
 
@@ -69,8 +70,7 @@ export const ourFileRouter = {
         data: {
           id: file.key,
           fileName: file.name,
-          fileType: 'other',
-          fileID: file.key,
+          fileType: getFileType({ fileName: file.name, mimeType: file.type }),
           createdAt: Date.now().toString(),
           fileSize: file.size,
           fileURL: file.ufsUrl,

@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { ALLOWED_TEXT_EXTENSIONS } from './constants';
+import { ALLOWED_TEXT_EXTENSIONS, FILE_TYPES } from './constants';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -40,4 +40,19 @@ export function isTextReadable(file: File) {
 
   // }
   return plainText || formatSupported;
+}
+
+export function getFileType({
+  mimeType,
+  fileName,
+}: {
+  mimeType: string;
+  fileName: string;
+}): (typeof FILE_TYPES)[number] {
+  if (mimeType.startsWith('image/')) return 'image';
+  else if (mimeType.startsWith('video/')) return 'video';
+  else if (mimeType.startsWith('audio/')) return 'audio';
+  else if (ALLOWED_TEXT_EXTENSIONS.has(fileName.split('').pop() ?? ''))
+    return 'plaintext';
+  else return 'other';
 }

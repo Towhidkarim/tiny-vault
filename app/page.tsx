@@ -1,6 +1,6 @@
 import UploadDefault from '@/components/features/uploads/upload-ui';
 import UploadDefaultForm from '@/components/features/uploads/upload-default';
-import UploadSection from '@/components/features/uploads/upload-section';
+import UploadSection from '@/components/features/uploads/upload-area';
 import DividerWithText from '@/components/ui/divider-with-text';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';

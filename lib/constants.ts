@@ -24,6 +24,14 @@ export const ALLOWED_TEXT_EXTENSIONS = new Set(
     ]
 )
 
+export const FILE_TYPES = [
+  'plaintext',
+  'image',
+  'video',
+  'audio',
+  'other',
+] as const;
+
 export const redisKeys = {
   publicValut: 'publc-vault',
 } as const;

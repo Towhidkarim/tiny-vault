@@ -11,7 +11,12 @@ import { Redis } from '@upstash/redis';
 import tryCatch from '@/lib/try-catch';
 import { cookieKeys, redisKeys } from '@/lib/constants';
 import { db } from '@/db';
-import { filesTable, TFilesTable } from '@/db/schema';
+import {
+  filesTable,
+  TFilesTable,
+  TValultsTable,
+  vaultsTable,
+} from '@/db/schema';
 import { inArray } from 'drizzle-orm';
 
 const vaultCookieName = 'valut-cookie';
@@ -46,6 +51,16 @@ export async function inititePublicVaultCreation() {
 }
 
 export async function finalizePublicVaultCreation() {
+  const vaultData: TValultsTable = {
+    id: nanoid(),
+    vaultName: 'My Vault',
+    vaultDescription: 'My Vault Description',
+    vaultFileIds: [],
+    vaultURLID: nanoid(7),
+    visibility: 'public',
+    password: null,
+    createdAt: Date.now().toString(),
+  };
   const deviceCookies = await cookies();
   const deviceHeaders = await headers();
   const deviceImprint = generateDeviceImprint(deviceHeaders);
@@ -69,7 +84,13 @@ export async function finalizePublicVaultCreation() {
 
   try {
     await db.transaction(async (tx) => {
+      const valueInfo: TValultsTable = {
+        ...vaultData,
+        id: uniqueID,
+        vaultFileIds: redisResults.map((file) => file.id),
+      };
       await tx.insert(filesTable).values(redisResults).onConflictDoNothing();
+      await tx.insert(vaultsTable).values(valueInfo).onConflictDoNothing();
     });
 
     redis.del(redisKeys.publicValut);

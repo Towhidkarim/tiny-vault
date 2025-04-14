@@ -11,7 +11,7 @@ import Image from 'next/image';
 import { getFileIconImage } from '@/lib/functions';
 import { useUploadThing } from '@/lib/uploadthing';
 
-export default function UploadSection({
+export default function UploadArea({
   setTextContent,
 }: {
   setTextContent: (value: string) => void;

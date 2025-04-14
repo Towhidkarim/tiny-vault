@@ -1,6 +1,6 @@
 'use client';
 import React, { TextareaHTMLAttributes, useRef, useState } from 'react';
-import UploadSection from './upload-section';
+import UploadArea from './upload-area';
 import DividerWithText from '@/components/ui/divider-with-text';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,7 +11,7 @@ export default function UploadUi() {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   return (
     <>
-      <UploadSection setTextContent={setTextContent} />
+      <UploadArea setTextContent={setTextContent} />
       <div className='mx-auto flex w-full max-w-3xl flex-col items-center justify-center gap-5'>
         <br />
         <DividerWithText text='Or' className='mx-auto w-44' />
