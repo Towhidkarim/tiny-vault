@@ -18,6 +18,8 @@ import {
   vaultsTable,
 } from '@/db/schema';
 import { inArray } from 'drizzle-orm';
+import { z } from 'zod';
+import { defaultUploadFormSchema } from '@/lib/typeschema/forms';
 
 const vaultCookieName = 'valut-cookie';
 
@@ -50,17 +52,19 @@ export async function inititePublicVaultCreation() {
   }
 }
 
-export async function finalizePublicVaultCreation() {
-  const vaultData: TValultsTable = {
-    id: nanoid(),
-    vaultName: 'My Vault',
-    vaultDescription: 'My Vault Description',
-    vaultFileIds: [],
-    vaultURLID: nanoid(7),
-    visibility: 'public',
-    password: null,
-    createdAt: Date.now().toString(),
-  };
+export async function finalizePublicVaultCreation(
+  rawVaultData: z.infer<typeof defaultUploadFormSchema>,
+): Promise<
+  | { success: true; vaultURLIdentifier: string }
+  | { success: false; error: string }
+> {
+  const vaultData = defaultUploadFormSchema.safeParse(rawVaultData);
+  if (!vaultData.success)
+    return {
+      success: false,
+      error: vaultData.error.flatten().formErrors.join(', '),
+    };
+
   const deviceCookies = await cookies();
   const deviceHeaders = await headers();
   const deviceImprint = generateDeviceImprint(deviceHeaders);
@@ -75,7 +79,7 @@ export async function finalizePublicVaultCreation() {
     return { success: false, error: 'Device imprint mismatch' };
   }
   const { result: redis, error } = await tryCatch(async () => Redis.fromEnv());
-  if (error) return { succes: false, error: 'Server Redis error' };
+  if (error) return { success: false, error: 'Server Redis error' };
   const redisResults = (await redis.smembers(
     redisKeys.publicValut,
   )) as TFilesTable[];
@@ -83,19 +87,38 @@ export async function finalizePublicVaultCreation() {
     return { success: false, error: 'No vault data found' };
 
   try {
+    const newVaultURLIdentifier = nanoid(7);
     await db.transaction(async (tx) => {
-      const valueInfo: TValultsTable = {
-        ...vaultData,
+      const {
+        vaultName,
+        visibility,
+        password,
+        passwordEnabled,
+        vaultDescription,
+      } = vaultData.data;
+      const extendedVaultData: TValultsTable = {
         id: uniqueID,
-        vaultFileIds: redisResults.map((file) => file.id),
+        password: passwordEnabled && password ? password : null,
+        createdAt: Date.now().toString(),
+        vaultDescription: vaultDescription || null,
+        vaultFileIds: redisResults.map((fileData) => fileData.id),
+        vaultName,
+        visibility,
+        vaultURLID: newVaultURLIdentifier,
       };
       await tx.insert(filesTable).values(redisResults).onConflictDoNothing();
-      await tx.insert(vaultsTable).values(valueInfo).onConflictDoNothing();
+      await tx
+        .insert(vaultsTable)
+        .values(extendedVaultData)
+        .onConflictDoNothing();
     });
 
     redis.del(redisKeys.publicValut);
 
-    return { success: true, message: 'Vault created successfully' };
+    return {
+      success: true,
+      vaultURLIdentifier: newVaultURLIdentifier,
+    };
   } catch (error) {
     console.log(error);
     return { success: false, error: 'Server error during database request' };

@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import UploadUi from './upload-ui';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
@@ -37,21 +37,26 @@ import {
   inititePublicVaultCreation,
 } from '@/app/actions';
 import { Textarea } from '@/components/ui/textarea';
+import { defaultUploadFormSchema } from '@/lib/typeschema/forms';
+import StatusIndicator from '@/components/ui/status-indicator';
 
-const formSchema = z.object({
-  vaultName: z.string().min(1).max(50),
-  vaultDescription: z.string().max(200).optional(),
-  visibility: z.union([z.literal('public'), z.literal('private')]),
-  passwordEnabled: z.boolean(),
-  password: z.string().min(4).max(8).optional(),
-});
+const formSchema = defaultUploadFormSchema;
 
 export default function UploadDefault() {
   const [currentFiles] = useAtom(filesToBeUploaded);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [vaultCreationState, setVaultCreationState] = useState<
-    'passive' | 'initialized' | 'uploading' | 'finalizing'
+  const [vaultCreationStatus, setVaultCreationStatus] = useState<
+    | 'passive'
+    | 'initialized'
+    | 'uploading'
+    | 'finalizing'
+    | 'completed'
+    | 'error'
   >('passive');
+
+  const [vaultURLIdentifier, setVaultURLIdentifier] = useState<string | null>(
+    null,
+  );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -63,29 +68,50 @@ export default function UploadDefault() {
       password: '',
     },
   });
+  const formValuesOnSubmit = useRef<z.infer<typeof formSchema>>(null);
   const [passwordEnabled, setPasswordEnabled] = useState(false);
   // const passwordEnabled = form.watch('passwordEnabled', false);
   const { startUpload, isUploading } = useUploadThing('publicFileUploader', {
     onUploadProgress: async (progress) => {
       setUploadProgress(progress);
-      if (progress >= 100 && !isUploading) {
-        setVaultCreationState('uploading');
-        await finalizePublicVaultCreation();
+    },
+    onClientUploadComplete: async (res) => {
+      if (!formValuesOnSubmit.current) {
+        setVaultCreationStatus('error');
+        return;
       }
+      setVaultCreationStatus('finalizing');
+
+      const result = await finalizePublicVaultCreation(
+        formValuesOnSubmit.current,
+      );
+      if (!result || !result.success) {
+        setVaultCreationStatus('error');
+        toast.error('Error During Finalizing');
+        return;
+      }
+
+      setVaultCreationStatus('completed');
+      setVaultURLIdentifier(result.vaultURLIdentifier);
     },
   });
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     const initialization = await inititePublicVaultCreation();
+    setVaultCreationStatus('initialized');
+    formValuesOnSubmit.current = data;
     if (initialization.succes) {
       startUpload(currentFiles);
+      setVaultCreationStatus('uploading');
     }
   };
 
   return (
     <Form {...form}>
+      <StatusIndicator className='top-20' status='loading' visible>
+        <span className='font-semibold opacity-75'>Statuses here</span>
+      </StatusIndicator>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <b>{uploadProgress}</b>
         <div className='relative flex w-full flex-col items-start justify-center gap-14 lg:flex-row lg:gap-5'>
           <div className='block w-full lg:w-3/4'>
             <UploadUi />
@@ -100,7 +126,7 @@ export default function UploadDefault() {
                   <FormControl>
                     <Input {...field} type='text' placeholder='Vault Name' />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className='text-xs' />
                   <FormDescription />
                 </FormItem>
               )}
