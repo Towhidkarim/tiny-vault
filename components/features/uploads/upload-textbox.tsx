@@ -33,6 +33,7 @@ export default function UploadTextbox() {
     });
     const allFiles = currentFiles.map((value) => value);
     allFiles[currentIndex] = newFile;
+
     setCurrentFiles(allFiles);
   };
 
@@ -92,7 +93,14 @@ export default function UploadTextbox() {
           type='text'
           onChange={(e) => setCurrentFileName(e.target.value)}
         />
-        <Button onClick={() => updateFile(currentFileName)}>Update</Button>
+        <Button
+          onClick={(e) => {
+            e.preventDefault();
+            updateFile(currentFileName);
+          }}
+        >
+          Update
+        </Button>
       </div>
     </div>
   );

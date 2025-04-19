@@ -24,6 +24,10 @@ export const ALLOWED_TEXT_EXTENSIONS = new Set(
     ]
 )
 
+export const routes = {
+  vaultRoute: '/vault',
+} as const;
+
 export const FILE_TYPES = [
   'plaintext',
   'image',

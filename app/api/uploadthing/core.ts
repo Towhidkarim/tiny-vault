@@ -25,6 +25,7 @@ export const ourFileRouter = {
   publicFileUploader: f({
     text: {
       maxFileSize: '512KB',
+      maxFileCount: 8,
     },
     image: {
       maxFileSize: '4MB',
@@ -32,9 +33,11 @@ export const ourFileRouter = {
     },
     audio: {
       maxFileSize: '8MB',
+      maxFileCount: 4,
     },
     pdf: {
       maxFileSize: '32MB',
+      maxFileCount: 8,
     },
     blob: {
       maxFileSize: '32MB',
@@ -48,14 +51,16 @@ export const ourFileRouter = {
       if (!forwarded) throw new UploadThingError('No IP address found');
       const ip = forwarded.split(',')[0];
 
-      console.log('Client IP in UploadThing middleware:', ip);
-      console.log(ip);
+      // console.log('Client IP in UploadThing middleware:', ip);
+      // console.log(ip);
 
       const token = cookies.get(cookieKeys.publicVaultCookie)?.value;
       if (token === undefined) throw new UploadThingError('Unauthorized');
 
       const verificationResult = await verifyIdentifierToken(token);
-      if (verificationResult.verified) return { passed: true };
+      // console.log(verificationResult);
+      if (verificationResult.verified)
+        return { vaultID: verificationResult.result.uniqueID };
       else throw new UploadThingError('Unauthorized');
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
@@ -66,9 +71,10 @@ export const ourFileRouter = {
       //   console.log('file url', file.ufsUrl);
       const { put } = await useFileRemoteCache<TFilesTable>();
       put({
-        key: redisKeys.publicValut,
+        key: `${redisKeys.publicValut}:${metadata.vaultID}`,
         data: {
           id: file.key,
+          parentVaultID: metadata.vaultID,
           fileName: file.name,
           fileType: getFileType({ fileName: file.name, mimeType: file.type }),
           createdAt: Date.now().toString(),

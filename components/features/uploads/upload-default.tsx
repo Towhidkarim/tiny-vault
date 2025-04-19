@@ -28,7 +28,7 @@ import UploadUi from './upload-ui';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { RefreshCcw } from 'lucide-react';
+import { Dot, Loader2, RefreshCcw } from 'lucide-react';
 import { useUploadThing } from '@/lib/uploadthing';
 import { useAtom } from 'jotai';
 import { filesToBeUploaded } from '@/lib/jotai/atoms';
@@ -39,6 +39,8 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { defaultUploadFormSchema } from '@/lib/typeschema/forms';
 import StatusIndicator from '@/components/ui/status-indicator';
+import { UploadCompletionAlert } from './UploadCompleteAlert';
+import { routes } from '@/lib/constants';
 
 const formSchema = defaultUploadFormSchema;
 
@@ -57,6 +59,16 @@ export default function UploadDefault() {
   const [vaultURLIdentifier, setVaultURLIdentifier] = useState<string | null>(
     null,
   );
+  const getVaultUrl = () =>
+    `${window.location.origin}${routes.vaultRoute}/${vaultURLIdentifier}`;
+  const [showAlert, setShowAlert] = useState(false);
+  const sampleContent =
+    'API_KEY=abc123def456ghi789jkl\nSECRET_TOKEN=xyz987uvw654tsr321qpo';
+
+  // This function would normally be triggered after your task completes
+  const handleTaskCompletion = () => {
+    setShowAlert(true);
+  };
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -87,14 +99,37 @@ export default function UploadDefault() {
       );
       if (!result || !result.success) {
         setVaultCreationStatus('error');
-        toast.error('Error During Finalizing');
+        toast.error('Error During Finalization');
         return;
       }
 
       setVaultCreationStatus('completed');
       setVaultURLIdentifier(result.vaultURLIdentifier);
+      setTimeout(() => {
+        handleTaskCompletion();
+        setVaultCreationStatus('passive');
+      }, 850);
     },
   });
+
+  const getStatusText = () => {
+    switch (vaultCreationStatus) {
+      case 'passive':
+        return 'Ready to create a new vault';
+      case 'initialized':
+        return 'Initializing Vault Creation...';
+      case 'uploading':
+        return `Uploading ${currentFiles.length} files...`;
+      case 'finalizing':
+        return 'Finalizing Vault Creation...';
+      case 'completed':
+        return `Vault Created Successfully!`;
+      case 'error':
+        return 'An error occurred. Please try again.';
+      default:
+        return '';
+    }
+  };
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     const initialization = await inititePublicVaultCreation();
@@ -108,15 +143,34 @@ export default function UploadDefault() {
 
   return (
     <Form {...form}>
-      <StatusIndicator className='top-20' status='loading' visible>
-        <span className='font-semibold opacity-75'>Statuses here</span>
+      <StatusIndicator
+        className='top-20'
+        status={
+          vaultCreationStatus === 'error'
+            ? 'error'
+            : vaultCreationStatus === 'completed'
+              ? 'done'
+              : 'loading'
+        }
+        visible={vaultCreationStatus !== 'passive'}
+      >
+        <span className='font-medium'>{getStatusText()}</span>
       </StatusIndicator>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <div className='relative flex w-full flex-col items-start justify-center gap-14 lg:flex-row lg:gap-5'>
-          <div className='block w-full lg:w-3/4'>
-            <UploadUi />
-          </div>
-          <div className='border-muted sticky top-10 flex w-full flex-col gap-5 rounded-2xl border p-4 lg:w-1/4'>
+      {/* <Button onClick={() => handleTaskCompletion()}>Show Done</Button> */}
+      <UploadCompletionAlert
+        open={showAlert}
+        onOpenChange={setShowAlert}
+        content={getVaultUrl()}
+      />
+      <div className='relative flex w-full flex-col items-start justify-center gap-14 lg:flex-row lg:gap-5'>
+        <div className='block w-full lg:w-3/4'>
+          <UploadUi />
+        </div>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className='w-full lg:w-1/4'
+        >
+          <div className='border-muted sticky top-10 flex w-full flex-col gap-5 rounded-2xl border p-4'>
             <FormField
               control={form.control}
               name='vaultName'
@@ -246,12 +300,27 @@ export default function UploadDefault() {
               )}
             />
 
-            <Button type='submit' className='w-full'>
-              Create New Vault
+            <Button
+              disabled={vaultCreationStatus !== 'passive'}
+              type='submit'
+              className='w-full'
+            >
+              {vaultCreationStatus === 'passive' ? (
+                <span className='font-semibold'>Create New Vault</span>
+              ) : (
+                <span className='flex flex-row items-center justify-center gap-2'>
+                  <Loader2
+                    size={24}
+                    strokeWidth={3}
+                    className='mr-2 animate-spin'
+                  />
+                  Processing...
+                </span>
+              )}
             </Button>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </Form>
   );
 }

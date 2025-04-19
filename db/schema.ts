@@ -6,6 +6,7 @@ text({ enum: FILE_TYPES });
 
 export const filesTable = sqliteTable('tv_files', {
   id: text('id').primaryKey().notNull(),
+  parentVaultID: text('parentVaultID').notNull(),
   fileName: text('fileName').notNull(),
   fileType: text('fileType', {
     enum: FILE_TYPES,

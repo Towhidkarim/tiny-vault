@@ -11,11 +11,7 @@ import Image from 'next/image';
 import { getFileIconImage } from '@/lib/functions';
 import { useUploadThing } from '@/lib/uploadthing';
 
-export default function UploadArea({
-  setTextContent,
-}: {
-  setTextContent: (value: string) => void;
-}) {
+export default function UploadArea() {
   const [currentFiles, setCurrentFiles] = useAtom(filesToBeUploaded);
   const onDrop = (acceptedFiles: File[]) => {
     //

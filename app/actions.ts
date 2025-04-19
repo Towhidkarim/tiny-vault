@@ -37,8 +37,8 @@ export async function inititePublicVaultCreation() {
     if (error) return { succes: false, error: 'Server Redis error' };
 
     //redis.set(`vaultID:${uniqueID}`, `imprint:headerImprint`, { ex: 60 * 2 }); // 2 minutes expiration window
-    redis.sadd(redisKeys.publicValut, '__init__');
-    redis.srem(redisKeys.publicValut, '__init__');
+    redis.sadd(`${redisKeys.publicValut}:${uniqueID}`, '__init__');
+    redis.srem(`${redisKeys.publicValut}:${uniqueID}`, '__init__');
     deviceCookies.set(cookieKeys.publicVaultCookie, jwt, {
       httpOnly: true,
       sameSite: 'strict',
@@ -81,7 +81,7 @@ export async function finalizePublicVaultCreation(
   const { result: redis, error } = await tryCatch(async () => Redis.fromEnv());
   if (error) return { success: false, error: 'Server Redis error' };
   const redisResults = (await redis.smembers(
-    redisKeys.publicValut,
+    `${redisKeys.publicValut}:${uniqueID}`,
   )) as TFilesTable[];
   if (!redisResults || redisResults.length === 0)
     return { success: false, error: 'No vault data found' };

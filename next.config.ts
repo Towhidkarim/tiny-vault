@@ -5,6 +5,15 @@ const nextConfig: NextConfig = {
   experimental: {
     reactCompiler: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'hqu5dftak8.ufs.sh',
+        pathname: '/f/*',
+      },
+    ],
+  },
 };
 
 export default nextConfig;
