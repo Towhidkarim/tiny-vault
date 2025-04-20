@@ -42,4 +42,5 @@ export const redisKeys = {
 
 export const cookieKeys = {
   publicVaultCookie: 'public-valut-cookie',
+  vaultPasswordCookie: 'vault-password-cookie',
 } as const;

@@ -8,6 +8,8 @@ import { ArrowDownToLine, CircleX } from 'lucide-react';
 import ImageFileRenderer from './ImageFileRenderer';
 import TextFileRenderer from './TextFileRenderer';
 import { toast } from 'sonner';
+import Image from 'next/image';
+import { getFileIconImage, getIconFromCategory } from '@/lib/functions';
 
 type Tprops = Exclude<Awaited<ReturnType<typeof getFullVaultData>>, null>;
 export default function FileDisplayFullclient({
@@ -120,7 +122,7 @@ export default function FileDisplayFullclient({
                 >
                   <Button
                     className={cn(
-                      'flex w-full cursor-pointer items-center justify-between rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200',
+                      'flex w-full cursor-pointer items-center justify-start rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200',
                       index == selectedFileIndex
                         ? 'bg-primary/75 hover:bg-primary/60 text-white'
                         : '',
@@ -128,7 +130,12 @@ export default function FileDisplayFullclient({
                     variant={selectedFileIndex == index ? 'default' : 'ghost'}
                     onClick={() => setSelectedFileIndex(index)}
                   >
-                    {file.fileName}
+                    <Image
+                      src={getIconFromCategory(file.fileType)}
+                      className='size-5'
+                      alt=''
+                    />
+                    <span className='truncate'>{file.fileName}</span>
                   </Button>
                 </li>
               ))}

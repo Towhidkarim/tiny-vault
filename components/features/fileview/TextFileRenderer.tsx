@@ -20,7 +20,7 @@ export default function TextFileRenderer({
               : { color: 'var(--color-muted-foreground)' }
           }
         >
-          <span className='text-sm'>{fileName}</span>
+          <span className='px-3 text-sm'>{fileName}</span>
         </li>
         <li className='text-muted-foreground my-auto text-xs'>{fileSize}</li>
       </ul>

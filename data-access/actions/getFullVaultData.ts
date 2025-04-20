@@ -10,7 +10,7 @@ export default async function getFullVaultData(vaultURLID: string) {
       .from(vaultsTable)
       .where(eq(vaultsTable.vaultURLID, vaultURLID))
       .limit(1);
-
+    if (!vaultData) return null;
     const filesData = await db
       .select()
       .from(filesTable)
@@ -19,6 +19,7 @@ export default async function getFullVaultData(vaultURLID: string) {
     const fullVaultData = {
       id: vaultData.id,
       vaultName: vaultData.vaultName,
+      vaultPassword: vaultData.password,
       vaultDescription: vaultData.vaultDescription,
       filesData,
     };

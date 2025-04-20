@@ -3,12 +3,13 @@ import { headers } from 'next/headers';
 import jwt from 'jsonwebtoken';
 import crypto, { hash } from 'crypto';
 import { SignJWT, jwtVerify } from 'jose';
+import { env } from '@/env';
 
 type TTokenPayload = {
   headerImprint: string;
   uniqueID: string;
 };
-const SECRET = 'server secret';
+const SECRET = env.SERVER_SECRET;
 
 //Create Device user device fingerprint using header values
 export function generateDeviceImprint(headers: Headers, hashed = true) {

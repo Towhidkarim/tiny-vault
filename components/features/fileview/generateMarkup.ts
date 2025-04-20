@@ -11,7 +11,7 @@ export default async function generateMarkupAction(
   const lang = languages.includes(fileExtension) ? fileExtension : 'plaintext';
   await highlighter.loadTheme('github-light');
   const htmlData = codeToHtml(text, {
-    lang: lang,
+    lang: fileExtension,
     theme: 'github-light',
   });
   return htmlData;

@@ -58,7 +58,7 @@ export function UploadCompletionAlert({
             <Textarea
               value={content}
               readOnly
-              className='bg-muted/40 text-foreground/80 h-8 resize-none py-4 pr-12 font-medium md:text-lg'
+              className='bg-muted/40 text-foreground/80 h-8 resize-none py-4 pr-12 font-medium md:text-base'
             />
             <Button
               variant='ghost'

@@ -53,7 +53,7 @@ export function getFileType({
   else if (mimeType.startsWith('video/')) return 'video';
   else if (mimeType.startsWith('audio/')) return 'audio';
   else if (mimeType.startsWith('text/')) return 'plaintext';
-  else if (ALLOWED_TEXT_EXTENSIONS.has(fileName.split('').pop() ?? ''))
+  else if (ALLOWED_TEXT_EXTENSIONS.has(fileName.split('.').pop() ?? ''))
     return 'plaintext';
   else return 'other';
 }

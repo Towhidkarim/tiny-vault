@@ -60,10 +60,10 @@ export default function UploadDefault() {
     null,
   );
   const getVaultUrl = () =>
-    `${window.location.origin}${routes.vaultRoute}/${vaultURLIdentifier}`;
+    globalThis.window
+      ? `${window.location.origin}${routes.vaultRoute}/${vaultURLIdentifier}`
+      : '';
   const [showAlert, setShowAlert] = useState(false);
-  const sampleContent =
-    'API_KEY=abc123def456ghi789jkl\nSECRET_TOKEN=xyz987uvw654tsr321qpo';
 
   // This function would normally be triggered after your task completes
   const handleTaskCompletion = () => {
