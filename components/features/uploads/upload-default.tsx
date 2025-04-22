@@ -213,6 +213,7 @@ export default function UploadDefault() {
                 <FormItem>
                   <FormLabel>Visibility</FormLabel>
                   <Select
+                    disabled
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >

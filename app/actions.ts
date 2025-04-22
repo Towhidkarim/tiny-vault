@@ -21,8 +21,7 @@ import { inArray } from 'drizzle-orm';
 import { z } from 'zod';
 import { defaultUploadFormSchema } from '@/lib/typeschema/forms';
 
-const vaultCookieName = 'valut-cookie';
-
+//Called before Upload is started
 export async function inititePublicVaultCreation() {
   try {
     const uniqueID = nanoid();
@@ -36,14 +35,15 @@ export async function inititePublicVaultCreation() {
     );
     if (error) return { succes: false, error: 'Server Redis error' };
 
-    //redis.set(`vaultID:${uniqueID}`, `imprint:headerImprint`, { ex: 60 * 2 }); // 2 minutes expiration window
-    redis.sadd(`${redisKeys.publicValut}:${uniqueID}`, '__init__');
-    redis.srem(`${redisKeys.publicValut}:${uniqueID}`, '__init__');
-    deviceCookies.set(cookieKeys.publicVaultCookie, jwt, {
+    const redisVaultKey = `${redisKeys.publicValut}:${uniqueID}`;
+    await redis.sadd(redisVaultKey, '__init__');
+    await redis.srem(redisVaultKey, '__init__');
+    redis.expire(redisVaultKey, 5 * 60); // 5 minutes expiration window
+    deviceCookies.set(cookieKeys.vaultPasswordCookie, jwt, {
       httpOnly: true,
       sameSite: 'strict',
       secure: true,
-      maxAge: 60 * 2, // 2 minutes expiration window
+      maxAge: 60 * 5, // 5 minutes expiration window
     });
     return { succes: true, token: jwt };
   } catch (error) {
@@ -52,6 +52,7 @@ export async function inititePublicVaultCreation() {
   }
 }
 
+//called after the uploads have been finished
 export async function finalizePublicVaultCreation(
   rawVaultData: z.infer<typeof defaultUploadFormSchema>,
 ): Promise<
@@ -113,7 +114,7 @@ export async function finalizePublicVaultCreation(
         .onConflictDoNothing();
     });
 
-    redis.del(redisKeys.publicValut);
+    await redis.del(`${redisKeys.publicValut}:${uniqueID}`);
 
     return {
       success: true,

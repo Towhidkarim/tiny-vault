@@ -25,7 +25,7 @@ export default function UploadUi() {
               className='border-border rounded-xl border p-2 last:border-b'
             >
               <AccordionTrigger className='hover:bg-muted-foreground/5 cursor-pointer px-2 font-semibold hover:no-underline'>
-                Edit Your Text Files
+                Edit or Add Your Text Files
               </AccordionTrigger>
               <AccordionContent className='p-2'>
                 <UploadTextbox />

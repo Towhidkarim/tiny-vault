@@ -2,10 +2,25 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import {
+  ALLOWED_TEXT_EXTENSIONS,
+  textExtensionList,
+  trimedExtensionList,
+} from '@/lib/constants';
 import { filesToBeUploaded, fileMetaData } from '@/lib/jotai/atoms';
 import { cn, isTextReadable } from '@/lib/utils';
 import { useAtom } from 'jotai';
+import { FilePlus, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function UploadTextbox() {
@@ -15,6 +30,7 @@ export default function UploadTextbox() {
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [currentText, setCurrentText] = useState('');
   const [currentFileName, setCurrentFileName] = useState('');
+  const [currentFileExtension, setCurrentFileExtensoin] = useState('');
 
   useEffect(() => {
     if (currentFiles.length === 0) {
@@ -28,13 +44,30 @@ export default function UploadTextbox() {
     if (currentIndex === -1 || currentFiles.length === 0) return;
     const fileName =
       newFileName === '' ? currentFiles[currentIndex].name : newFileName;
-    const newFile = new File([currentText], `${fileName}.txt`, {
-      type: 'text/plain',
-    });
+    const newFile = new File(
+      [currentText],
+      `${fileName}.${currentFileExtension}`,
+      {
+        type: 'text/plain',
+      },
+    );
     const allFiles = currentFiles.map((value) => value);
     allFiles[currentIndex] = newFile;
 
     setCurrentFiles(allFiles);
+  };
+
+  const addNewFile = (newFileName: string = '') => {
+    if (currentText.length === 0) return;
+    const fileName = newFileName === '' ? 'New File' : currentFileName;
+    const newFile = new File(
+      [currentText],
+      `${fileName}.${currentFileExtension}`,
+      {
+        type: 'text/plain',
+      },
+    );
+    setCurrentFiles([...currentFiles, newFile]);
   };
 
   return (
@@ -59,7 +92,7 @@ export default function UploadTextbox() {
                     // setCurrentFileName(item.name);
                     setCurrentFileName(() => {
                       const newFileName = item.name.split('.');
-                      newFileName.pop();
+                      setCurrentFileExtensoin(newFileName.pop() ?? '');
                       return newFileName.join('.');
                     });
                   }}
@@ -86,13 +119,31 @@ export default function UploadTextbox() {
         onChange={(e) => setCurrentText(e.target.value)}
         className='text-accent-foreground mb-2 max-h-96 min-h-44 font-normal placeholder:opacity-55 lg:max-h-[960px]'
       />
-      <div className='flex flex-col gap-1 lg:flex-row'>
-        <Input
-          className='max-w-1/3'
-          value={currentFileName}
-          type='text'
-          onChange={(e) => setCurrentFileName(e.target.value)}
-        />
+      <div className='flex flex-col gap-1 py-2 lg:flex-row'>
+        <div className='flex flex-row gap-2'>
+          <Input
+            className='w-3/5 text-sm placeholder:opacity-50 lg:max-w-2/4'
+            value={currentFileName}
+            placeholder='File Name'
+            type='text'
+            onChange={(e) => setCurrentFileName(e.target.value)}
+          />
+          <Select onValueChange={(value) => setCurrentFileExtensoin(value)}>
+            <SelectTrigger className='w-2/5 lg:max-w-2/4'>
+              <SelectValue placeholder='File Type' />
+            </SelectTrigger>
+            <SelectContent>
+              {trimedExtensionList.map((value, index) => (
+                <SelectItem value={value} key={index} className=''>
+                  .{value}
+                </SelectItem>
+              ))}
+              {/* <SelectItem value='light'>Light</SelectItem>
+              <SelectItem value='dark'>Dark</SelectItem>
+              <SelectItem value='system'>System</SelectItem> */}
+            </SelectContent>
+          </Select>
+        </div>
         <Button
           onClick={(e) => {
             e.preventDefault();
@@ -100,6 +151,12 @@ export default function UploadTextbox() {
           }}
         >
           Update
+        </Button>
+        <Button
+          disabled={currentText.length === 0}
+          onClick={() => addNewFile(currentFileName)}
+        >
+          Add as New File
         </Button>
       </div>
     </div>

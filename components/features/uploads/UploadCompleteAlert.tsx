@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Check, CircleCheck, CircleCheckBig, Copy } from 'lucide-react';
 import {
   AlertDialog,
@@ -14,6 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import Link from 'next/link';
+import { Input } from '@/components/ui/input';
 
 interface TaskCompletionAlertProps {
   open: boolean;
@@ -32,6 +33,7 @@ export function UploadCompletionAlert({
   content,
   actionLabel = 'Close',
 }: TaskCompletionAlertProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -42,35 +44,38 @@ export function UploadCompletionAlert({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className='max-w-md'>
+      <AlertDialogContent className='max-w-full'>
         <AlertDialogHeader>
           <AlertDialogTitle className='mx-auto block text-center text-xl'>
             <CircleCheckBig size={44} className='text-primary mx-auto my-2' />
-
             {title}
           </AlertDialogTitle>
           <AlertDialogDescription className='text-muted-foreground text-center'>
             {description}
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <div className='my-4'>
-          <div className='relative'>
-            <Textarea
+        <div className='my-4 w-full'>
+          <div className='relative w-full'>
+            <Input
+              type='text'
+              ref={inputRef}
+              onFocus={() => inputRef.current?.select()}
               value={content}
+              // value='http://tinyvault.vercel.app/vault/1234567'
               readOnly
-              className='bg-muted/40 text-foreground/80 h-8 resize-none py-4 pr-12 font-medium md:text-base'
+              className='bg-muted/40 foreground/80 h-8 resize-none py-6 pr-12 text-xs font-medium md:text-base'
             />
             <Button
               variant='ghost'
-              className='text-muted-foreground hover:text-foreground absolute top-3 right-2 my-auto'
+              className='text-muted-foreground hover:text-foreground absolute top-2 right-2 my-auto border bg-white'
               onClick={handleCopy}
             >
               {copied ? (
                 <Check size={24} className='text-green-500' />
               ) : (
                 <Copy size={24} className='' />
-              )}{' '}
-              Copy
+              )}
+              <span className='hidden md:inline-block'>Copy</span>
               <span className='sr-only'>Copy to clipboard</span>
             </Button>
           </div>

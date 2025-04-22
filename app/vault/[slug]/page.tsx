@@ -8,6 +8,7 @@ import getFullVaultData from '@/data-access/actions/getFullVaultData';
 import FileDisplayFullclient from '@/components/features/fileview/FileDisplayFullclient';
 import { cookies } from 'next/headers';
 import { cookieKeys } from '@/lib/constants';
+import { VaultPasswordForm } from '@/components/features/VaultPasswordForm';
 
 export default async function Page({
   params,
@@ -46,8 +47,14 @@ export default async function Page({
   if (vaultDataFromSlug.vaultPassword !== null) {
     const cookieData = await cookies();
     const passwordFromCookie = cookieData.get(cookieKeys.vaultPasswordCookie);
+    console.log(passwordFromCookie);
     if (vaultDataFromSlug.vaultPassword !== passwordFromCookie?.value)
-      return 'Password Required';
+      return (
+        <main className='border-none outline-none'>
+          <Navbar />
+          <VaultPasswordForm vaultID={vaultDataFromSlug.id} />
+        </main>
+      );
   }
 
   return (

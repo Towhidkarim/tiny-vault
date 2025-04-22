@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import generateMarkupAction from './generateMarkup';
+import GenerateMarkupAction from './GenerateMarkupAction';
 import { Copy, Loader2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,7 @@ export default function CodeRenderer({
       const file = await fetch(fileURL);
       const rawText = await file.text();
       const lang = fileName.split('.').pop() ?? '';
-      return { markup: await generateMarkupAction(rawText, lang), rawText };
+      return { markup: await GenerateMarkupAction(rawText, lang), rawText };
     },
     queryKey: ['mutation', fileURL],
   });

@@ -2,7 +2,7 @@ import getFullVaultData from '@/data-access/actions/getFullVaultData';
 import CodeRenderer from './code-renderer.server';
 import { formatFileSize } from '@/lib/utils';
 import FileDisplay from './FileDisplay';
-import generateMarkup from './generateMarkup';
+import generateMarkup from './GenerateMarkupAction';
 
 type MultiFileFetcherProps = Exclude<
   Awaited<ReturnType<typeof getFullVaultData>>,

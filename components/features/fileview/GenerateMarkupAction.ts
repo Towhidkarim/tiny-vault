@@ -2,7 +2,7 @@
 
 import { getSingletonHighlighter, codeToHtml } from 'shiki';
 
-export default async function generateMarkupAction(
+export default async function GenerateMarkupAction(
   text: string,
   fileExtension: string,
 ) {
