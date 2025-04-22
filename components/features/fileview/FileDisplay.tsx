@@ -3,7 +3,14 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useState } from 'react';
-import { TProcessedFileData } from './MultiFileFetcher.server';
+
+export type TProcessedFileData = {
+  fileName: string;
+  fileType: 'plaintext' | 'image' | 'video' | 'audio' | 'other';
+  fileURL: string;
+  fileSize: string;
+  renderedComponent: React.ReactNode;
+};
 
 export default function FileDisplay({
   processedFileData,
