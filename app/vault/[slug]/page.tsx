@@ -47,7 +47,7 @@ export default async function Page({
   if (vaultDataFromSlug.vaultPassword !== null) {
     const cookieData = await cookies();
     const passwordFromCookie = cookieData.get(cookieKeys.vaultPasswordCookie);
-    console.log(passwordFromCookie);
+    // console.log(passwordFromCookie);
     if (vaultDataFromSlug.vaultPassword !== passwordFromCookie?.value)
       return (
         <main className='border-none outline-none'>
