@@ -2,6 +2,7 @@ import { Search, User } from 'lucide-react';
 import React from 'react';
 import { Input } from './ui/input';
 import Link from 'next/link';
+import { Button } from './ui/button';
 
 export default function Navbar() {
   return (
@@ -23,9 +24,10 @@ export default function Navbar() {
             className='placeholder:opacity-55'
           />
         </div>
-        <div className='flex flex-row gap-2.5'>
-          <User />
-          <User />
+        <div className='hidden flex-row gap-2.5 lg:flex'>
+          <Button variant='ghost' asChild>
+            <Link href={'/'}>Sign Up</Link>
+          </Button>
         </div>
       </div>
     </nav>
