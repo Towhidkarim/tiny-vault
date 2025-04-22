@@ -39,7 +39,7 @@ export async function inititePublicVaultCreation() {
     await redis.sadd(redisVaultKey, '__init__');
     await redis.srem(redisVaultKey, '__init__');
     redis.expire(redisVaultKey, 5 * 60); // 5 minutes expiration window
-    deviceCookies.set(cookieKeys.vaultPasswordCookie, jwt, {
+    deviceCookies.set(cookieKeys.publicVaultCookie, jwt, {
       httpOnly: true,
       sameSite: 'strict',
       secure: true,

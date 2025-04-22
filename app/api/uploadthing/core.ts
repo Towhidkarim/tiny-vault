@@ -55,8 +55,8 @@ export const ourFileRouter = {
       // console.log(ip);
 
       const token = cookies.get(cookieKeys.publicVaultCookie)?.value;
+      console.log(token);
       if (token === undefined) throw new UploadThingError('Unauthorized');
-
       const verificationResult = await verifyIdentifierToken(token);
       // console.log(verificationResult);
       if (verificationResult.verified)
