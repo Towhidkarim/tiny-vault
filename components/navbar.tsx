@@ -10,7 +10,7 @@ export default function Navbar() {
       <div className='flex w-full flex-row items-center justify-between'>
         <Link href={'/'}>
           <h1 className='text-primary text-3xl font-extrabold'>
-            Tiny <span className='text-accent-foreground'>Valult</span>
+            Tiny <span className='text-accent-foreground'>Vault</span>
           </h1>
         </Link>
         <div className='relative mr-10 w-74'>

@@ -30,7 +30,7 @@ export default function UploadTextbox() {
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [currentText, setCurrentText] = useState('');
   const [currentFileName, setCurrentFileName] = useState('');
-  const [currentFileExtension, setCurrentFileExtensoin] = useState('');
+  const [currentFileExtension, setCurrentFileExtensoin] = useState('txt');
 
   useEffect(() => {
     if (currentFiles.length === 0) {
@@ -57,17 +57,20 @@ export default function UploadTextbox() {
     setCurrentFiles(allFiles);
   };
 
-  const addNewFile = (newFileName: string = '') => {
-    if (currentText.length === 0) return;
-    const fileName = newFileName === '' ? 'New File' : currentFileName;
+  const addNewFile = (newFileName: string = '', fileExtention: string = '') => {
+    // if (currentText.length === 0) return;
+    const fileName = currentFileName === '' ? 'New File' : newFileName;
     const newFile = new File(
       [currentText],
-      `${fileName}.${currentFileExtension}`,
+      `${fileName}.${fileExtention === '' ? currentFileExtension : fileExtention}`,
       {
         type: 'text/plain',
       },
     );
     setCurrentFiles([...currentFiles, newFile]);
+    //not len - 1 because after updating the state, the updated state is not available yet here
+    setCurrentIndex(currentFiles.length);
+    setCurrentFileName(fileName);
   };
 
   return (
@@ -111,6 +114,15 @@ export default function UploadTextbox() {
             );
           }
         })}
+        <li>
+          <Button
+            variant='outline'
+            className='rounded-b-none border-b-0'
+            onClick={() => addNewFile('New File', 'txt')}
+          >
+            <Plus size={36} /> Add File
+          </Button>
+        </li>
       </ul>
 
       <Textarea

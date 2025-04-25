@@ -25,8 +25,8 @@ export default function ImageFileRenderer({
         <Image
           src={fileURL}
           alt=''
-          loading='lazy'
-          className='z-10 rounded-4xl object-contain'
+          loading='eager'
+          className='z-10 rounded-xl object-contain'
           fill
         />
       </figure>

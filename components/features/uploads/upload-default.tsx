@@ -46,6 +46,7 @@ const formSchema = defaultUploadFormSchema;
 
 export default function UploadDefault() {
   const [currentFiles] = useAtom(filesToBeUploaded);
+  const currentNonEmptyFiles = currentFiles.filter((item) => item.size !== 0);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [vaultCreationStatus, setVaultCreationStatus] = useState<
     | 'passive'
@@ -110,6 +111,14 @@ export default function UploadDefault() {
         setVaultCreationStatus('passive');
       }, 850);
     },
+    onUploadError: (error) => {
+      console.log(error);
+      toast.error('Error!', {
+        description: 'A server side error Occured while uploading',
+      });
+      setVaultCreationStatus('error');
+      setTimeout(() => setVaultCreationStatus('passive'), 3000);
+    },
   });
 
   const getStatusText = () => {
@@ -119,7 +128,7 @@ export default function UploadDefault() {
       case 'initialized':
         return 'Initializing Vault Creation...';
       case 'uploading':
-        return `Uploading ${currentFiles.length} files...`;
+        return `Uploading ${currentNonEmptyFiles.length} files ${uploadProgress}%`;
       case 'finalizing':
         return 'Finalizing Vault Creation...';
       case 'completed':
@@ -132,11 +141,15 @@ export default function UploadDefault() {
   };
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    const initialization = await inititePublicVaultCreation();
+    if (currentNonEmptyFiles.length === 0) {
+      toast.info('Must contain atleast one valid/nonempty file');
+      return;
+    }
     setVaultCreationStatus('initialized');
+    const initialization = await inititePublicVaultCreation();
     formValuesOnSubmit.current = data;
     if (initialization.succes) {
-      startUpload(currentFiles);
+      startUpload(currentNonEmptyFiles);
       setVaultCreationStatus('uploading');
     }
   };
