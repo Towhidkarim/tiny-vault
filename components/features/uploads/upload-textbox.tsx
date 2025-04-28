@@ -25,6 +25,7 @@ import { useEffect, useState } from 'react';
 
 export default function UploadTextbox() {
   const [currentFiles, setCurrentFiles] = useAtom(filesToBeUploaded);
+  const [prevFilesLength, setPrevFilesLength] = useState(0);
   const [metaData] = useAtom(fileMetaData);
   const [isInitialized, setIsInitialized] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(-1);
@@ -70,6 +71,7 @@ export default function UploadTextbox() {
     setCurrentFiles([...currentFiles, newFile]);
     //not len - 1 because after updating the state, the updated state is not available yet here
     setCurrentIndex(currentFiles.length);
+    setCurrentText('');
     setCurrentFileName(fileName);
   };
 

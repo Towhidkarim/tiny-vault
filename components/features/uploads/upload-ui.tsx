@@ -22,7 +22,7 @@ export default function UploadUi() {
           <Accordion type='single' collapsible>
             <AccordionItem
               value='item-1'
-              className='border-border rounded-xl border p-2 last:border-b'
+              className='border-primary/40 rounded-xl border p-2 last:border-b'
             >
               <AccordionTrigger className='hover:bg-muted-foreground/5 cursor-pointer px-2 font-semibold hover:no-underline'>
                 Edit or Add Your Text Files

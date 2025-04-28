@@ -10,6 +10,9 @@ import TextFileRenderer from './TextFileRenderer';
 import { toast } from 'sonner';
 import Image from 'next/image';
 import { getFileIconImage, getIconFromCategory } from '@/lib/functions';
+import { notifyManager, useQueries, useQuery } from '@tanstack/react-query';
+import GenerateMarkupAction from './GenerateMarkupAction';
+import { QUERY_KEYS } from '@/lib/constants';
 
 type Tprops = Exclude<Awaited<ReturnType<typeof getFullVaultData>>, null>;
 export default function FileDisplayFullclient({
@@ -43,8 +46,24 @@ export default function FileDisplayFullclient({
     }
   };
 
+  const plaintextFiles = filesData.filter(
+    (file) => file.fileType === 'plaintext',
+  );
+  useQueries({
+    queries: plaintextFiles.map((item) => ({
+      queryFn: async () => {
+        const file = await fetch(item.fileURL);
+        const rawText = await file.text();
+        const lang = item.fileName.split('.').pop() ?? '';
+        const markup = await GenerateMarkupAction(rawText, lang);
+        return { markup, rawText };
+      },
+      queryKey: [QUERY_KEYS.textFiles, item.fileURL],
+    })),
+  });
+
   const getRendererComponent = () => {
-    if (currentFile.fileType === 'plaintext')
+    if (currentFile.fileType === 'plaintext') {
       return (
         <TextFileRenderer
           fileName={currentFile.fileName}
@@ -52,7 +71,7 @@ export default function FileDisplayFullclient({
           fileSize={formatFileSize(currentFile.fileSize)}
         />
       );
-    else if (currentFile.fileType === 'image')
+    } else if (currentFile.fileType === 'image')
       return (
         <ImageFileRenderer
           fileURL={currentFile.fileURL}

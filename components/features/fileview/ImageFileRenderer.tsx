@@ -1,4 +1,5 @@
 import { formatFileSize } from '@/lib/utils';
+import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
 
@@ -21,12 +22,15 @@ export default function ImageFileRenderer({
           {formatFileSize(fileSize)}
         </span>
       </h4>
-      <figure className='relative h-[500px] w-full overflow-hidden rounded-xl'>
+      <figure className='relative min-h-[500px] w-full overflow-hidden bg-[#f0f0f0]'>
+        {/* <figcaption className='z-0'>
+          <Loader2 size={44} className='mx-auto my-10 animate-spin' />
+        </figcaption> */}
         <Image
           src={fileURL}
-          alt=''
-          loading='eager'
-          className='z-10 rounded-xl object-contain'
+          alt={fileName}
+          loading='lazy'
+          className='z-10 object-contain'
           fill
         />
       </figure>

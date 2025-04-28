@@ -14,15 +14,22 @@ export default function Navbar() {
           </h1>
         </Link>
         <div className='relative mr-10 w-74'>
-          <Search
-            size={24}
-            className='text-accent-foreground absolute top-1/2 right-4 -translate-y-1/2 stroke-1 opacity-70'
-          />
-          <Input
-            type='text'
-            placeholder='Search...'
-            className='placeholder:opacity-55'
-          />
+          <form action='/search' className='flex flex-row gap-0'>
+            <Input
+              name='query'
+              type='text'
+              required
+              placeholder='Search...'
+              className='peer rounded-r-none border-r-0 placeholder:opacity-55'
+            />
+            <Button
+              type='submit'
+              variant='outline'
+              className='peer-focus-visible:ring-ring/50 rounded-l-none border-l-0 peer-focus:ring-1 peer-focus-visible:ring-[3px]'
+            >
+              <Search className='size-5' />
+            </Button>
+          </form>
         </div>
         <div className='hidden flex-row gap-2.5 lg:flex'>
           <Button variant='ghost' asChild>

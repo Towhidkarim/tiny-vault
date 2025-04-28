@@ -6,6 +6,7 @@ import { Copy, Loader2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { QUERY_KEYS } from '@/lib/constants';
 
 export default function CodeRenderer({
   fileName,
@@ -19,9 +20,13 @@ export default function CodeRenderer({
       const file = await fetch(fileURL);
       const rawText = await file.text();
       const lang = fileName.split('.').pop() ?? '';
-      return { markup: await GenerateMarkupAction(rawText, lang), rawText };
+      const markup = await GenerateMarkupAction(rawText, lang);
+      return { markup, rawText };
     },
-    queryKey: ['mutation', fileURL],
+    queryKey: [QUERY_KEYS.textFiles, fileURL],
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    staleTime: Infinity,
   });
 
   const copyToClipboard = async () => {

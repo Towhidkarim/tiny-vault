@@ -45,6 +45,10 @@ export const FILE_TYPES = [
   'other',
 ] as const;
 
+export const QUERY_KEYS = {
+  textFiles: 'text-file',
+};
+
 export const redisKeys = {
   publicValut: 'publc-vault',
 } as const;
