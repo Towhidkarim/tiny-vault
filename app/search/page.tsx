@@ -41,6 +41,7 @@ export default async function page({
 
   if (!searchQuery) return <NotFound />;
   const searchResults = await searchVaultsByQuery(searchQuery);
+  // console.log(searchResults);
   if (!searchResults) return <NotFound />;
 
   return (
@@ -54,7 +55,14 @@ export default async function page({
           <Card key={index} className='mx-auto my-4 max-w-2xl shadow-none'>
             <CardHeader>
               <CardTitle className='text-2xl'>{item.vaultName}</CardTitle>
-              <CardDescription>by {`Anomuous`}</CardDescription>
+              <CardDescription>
+                by{' '}
+                {item.vaultUrlID ? (
+                  <span className='underline'> {item.authorName}</span>
+                ) : (
+                  'Anonymous'
+                )}
+              </CardDescription>
             </CardHeader>
             <CardContent>
               {item.description?.length === 0 || item.description === null ? (
@@ -76,7 +84,7 @@ export default async function page({
               </span>
             ))} */}
               <span className='text-sm'>
-                {item.files.length} Files in vault
+                {item.files?.length} Files in vault
               </span>
             </CardContent>
             <CardFooter>

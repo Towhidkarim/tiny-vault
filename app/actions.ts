@@ -20,6 +20,7 @@ import {
 import { inArray } from 'drizzle-orm';
 import { z } from 'zod';
 import { defaultUploadFormSchema } from '@/lib/typeschema/forms';
+import { auth } from '@/lib/auth';
 
 //Called before Upload is started
 export async function inititePublicVaultCreation() {
@@ -69,6 +70,7 @@ export async function finalizePublicVaultCreation(
   const deviceCookies = await cookies();
   const deviceHeaders = await headers();
   const deviceImprint = generateDeviceImprint(deviceHeaders);
+  const session = await auth.api.getSession({ headers: deviceHeaders });
   const token = deviceCookies.get(cookieKeys.publicVaultCookie)?.value;
   if (!token) return { success: false, error: 'No token found' };
   const tokenResult = await verifyIdentifierToken(token);
@@ -105,6 +107,7 @@ export async function finalizePublicVaultCreation(
         vaultFileIds: redisResults.map((fileData) => fileData.id),
         vaultName,
         visibility,
+        vaultAuthorID: session?.user.id ?? null,
         vaultURLID: newVaultURLIdentifier,
       };
       await tx.insert(filesTable).values(redisResults).onConflictDoNothing();

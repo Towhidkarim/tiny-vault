@@ -74,6 +74,7 @@ export type TFilesTable = typeof filesTable.$inferSelect;
 export const vaultsTable = sqliteTable('tv_vaults', {
   id: text('id').primaryKey().notNull(),
   vaultName: text('vaultName').notNull(),
+  vaultAuthorID: text('vaultAuthorID'),
   vaultDescription: text('vaultDescription'),
   vaultFileIds: text('vaultFileIds', { mode: 'json' })
     .$type<string[]>()

@@ -1,19 +1,25 @@
-import { Search, User } from 'lucide-react';
+import { Search, User, UserRound } from 'lucide-react';
 import React from 'react';
 import { Input } from './ui/input';
 import Link from 'next/link';
 import { Button } from './ui/button';
+import MainLogo from './main-logo';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import UserDropdownMenu from './user-dropdown-menu';
+import { routes } from '@/lib/constants';
 
-export default function Navbar() {
+export default async function Navbar() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+  const user = session?.user;
   return (
     <nav className='mx-auto mb-2 flex w-full max-w-7xl flex-row justify-center px-4 py-1.5'>
       <div className='flex w-full flex-row items-center justify-between'>
-        <Link href={'/'}>
-          <h1 className='text-primary text-3xl font-extrabold'>
-            Tiny <span className='text-accent-foreground'>Vault</span>
-          </h1>
-        </Link>
-        <div className='relative mr-10 w-74'>
+        <MainLogo />
+        <div className='relative mr-10 hidden w-74 lg:block'>
           <form action='/search' className='flex flex-row gap-0'>
             <Input
               name='query'
@@ -31,10 +37,17 @@ export default function Navbar() {
             </Button>
           </form>
         </div>
-        <div className='hidden flex-row gap-2.5 lg:flex'>
-          <Button variant='ghost' asChild>
-            <Link href={'/'}>Sign Up</Link>
-          </Button>
+        <div className='flex flex-row items-center gap-2.5'>
+          {user ? (
+            <>
+              <p className='text-sm'>Welcome, {user.name.split(' ')[0]}</p>
+              <UserDropdownMenu userFullName={user.name} email={user.email} />
+            </>
+          ) : (
+            <Button id='userbutton' variant='ghost' asChild>
+              <Link href={routes.signIn}>Sign In</Link>
+            </Button>
+          )}
         </div>
       </div>
     </nav>

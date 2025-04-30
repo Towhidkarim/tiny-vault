@@ -35,6 +35,8 @@ export const trimedExtensionList = [
 
 export const routes = {
   vaultRoute: '/vault',
+  signIn: '/signin',
+  signUp: '/signup',
 } as const;
 
 export const FILE_TYPES = [
