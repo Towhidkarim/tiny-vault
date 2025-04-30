@@ -25,6 +25,7 @@ import {
 import { signOut } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { routes } from '@/lib/constants';
 
 export default function UserDropdownMenu({
   userFullName,
@@ -71,8 +72,10 @@ export default function UserDropdownMenu({
           <p className='my-1 text-center text-xs font-normal'>{email}</p>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <UserRound /> Profile
+        <DropdownMenuItem asChild>
+          <Link href={routes.dashboard} className='hover:cursor-pointer'>
+            <UserRound /> My Vaults
+          </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href={'/'} className='hover:cursor-pointer'>

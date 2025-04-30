@@ -1,4 +1,5 @@
 import Navbar from '@/components/navbar';
+import SearchResults from '@/components/search-results';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -47,58 +48,11 @@ export default async function page({
   return (
     <main>
       <Navbar />
-      <section className='mx-auto w-full max-w-7xl px-4'>
-        <h1 className='my-6 text-center text-xl font-bold'>
-          Showing Search Results for: {searchQuery}
-        </h1>
-        {searchResults.map((item, index) => (
-          <Card key={index} className='mx-auto my-4 max-w-2xl shadow-none'>
-            <CardHeader>
-              <CardTitle className='text-2xl'>{item.vaultName}</CardTitle>
-              <CardDescription>
-                by{' '}
-                {item.vaultUrlID ? (
-                  <span className='underline'> {item.authorName}</span>
-                ) : (
-                  'Anonymous'
-                )}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {item.description?.length === 0 || item.description === null ? (
-                <p className='text-muted-foreground text-sm'>
-                  {' '}
-                  <i>No Description</i>{' '}
-                </p>
-              ) : (
-                <p>{item.description}</p>
-              )}
-              <br />
-              {/* <h4 className='my-2'>Files in vault</h4> */}
-              {/* {item.fileNames.map((item, index) => (
-                <span
-                key={index}
-                className='border-primary mx-1 max-w-24 cursor-default truncate rounded-xl border px-3 text-sm'
-                >
-                {item}
-              </span>
-            ))} */}
-              <span className='text-sm'>
-                {item.files?.length} Files in vault
-              </span>
-            </CardContent>
-            <CardFooter>
-              <Button variant='outline' asChild>
-                <Link
-                  target='_blank'
-                  href={`${baseUrl}/${routes.vaultRoute}/${item.vaultUrlID}`}
-                >
-                  Open {item.vaultName}
-                </Link>
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
+      <section className='mx-auto mt-3 mb-10 w-full max-w-7xl px-4'>
+        <h4 className='text-muted-foreground my-6 text-center'>
+          Showing {searchResults.length} Results for <b> '{searchQuery}'</b>
+        </h4>
+        <SearchResults results={searchResults} />
       </section>
     </main>
   );

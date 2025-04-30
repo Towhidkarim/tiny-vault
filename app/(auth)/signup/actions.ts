@@ -3,7 +3,7 @@ import { auth } from '@/lib/auth';
 import { z } from 'zod';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { SignUpSchema } from '@/lib/types';
+import { SignUpSchema } from '@/lib/typeschema/forms';
 import { db } from '@/db';
 import { user } from '@/db/schema';
 import { eq } from 'drizzle-orm';

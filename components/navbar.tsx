@@ -24,6 +24,7 @@ export default async function Navbar() {
             <Input
               name='query'
               type='text'
+              minLength={3}
               required
               placeholder='Search...'
               className='peer rounded-r-none border-r-0 placeholder:opacity-55'

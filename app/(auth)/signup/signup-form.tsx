@@ -9,7 +9,7 @@ import { useRef, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { SignUpAction } from './actions';
 import { toast } from 'sonner';
-import { SignUpSchema } from '@/lib/types';
+import { SignUpSchema } from '@/lib/typeschema/forms';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -72,8 +72,8 @@ export function SignUpForm({
               type='text'
               pattern='^[A-Za-z]+$'
               placeholder='John'
-              min={3}
-              max={16}
+              minLength={3}
+              maxLength={16}
               required
             />
           </div>
@@ -85,8 +85,8 @@ export function SignUpForm({
               type='text'
               pattern='^[A-Za-z]+$'
               placeholder='Doe'
-              min={3}
-              max={16}
+              minLength={3}
+              maxLength={16}
               required
             />
           </div>
@@ -121,8 +121,8 @@ export function SignUpForm({
             type='password'
             placeholder='******'
             pattern={passoword}
-            min={8}
-            max={32}
+            minLength={8}
+            maxLength={32}
             required
           />
         </div>

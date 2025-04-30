@@ -17,3 +17,16 @@ export default async function getVaultDataByURL(slug: string) {
     return null;
   }
 }
+
+export async function getVaultsByUserID(userID: string) {
+  try {
+    const results = await db
+      .select()
+      .from(vaultsTable)
+      .where(eq(vaultsTable.vaultAuthorID, userID));
+    return results;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}

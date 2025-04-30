@@ -37,6 +37,7 @@ export const routes = {
   vaultRoute: '/vault',
   signIn: '/signin',
   signUp: '/signup',
+  dashboard: '/dashboard',
 } as const;
 
 export const FILE_TYPES = [

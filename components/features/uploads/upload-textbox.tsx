@@ -17,6 +17,7 @@ import {
   textExtensionList,
   trimedExtensionList,
 } from '@/lib/constants';
+import useDebounce from '@/lib/hooks/useDebounce';
 import { filesToBeUploaded, fileMetaData } from '@/lib/jotai/atoms';
 import { cn, isTextReadable } from '@/lib/utils';
 import { useAtom } from 'jotai';
@@ -57,6 +58,8 @@ export default function UploadTextbox() {
 
     setCurrentFiles(allFiles);
   };
+
+  const updateFileDebounce = useDebounce(updateFile, 1000);
 
   const addNewFile = (newFileName: string = '', fileExtention: string = '') => {
     // if (currentText.length === 0) return;
@@ -130,7 +133,10 @@ export default function UploadTextbox() {
       <Textarea
         placeholder='Your text here...'
         value={currentText}
-        onChange={(e) => setCurrentText(e.target.value)}
+        onChange={(e) => {
+          setCurrentText(e.target.value);
+          updateFileDebounce(currentFileName);
+        }}
         className='text-accent-foreground mb-2 max-h-96 min-h-44 font-normal placeholder:opacity-55 lg:max-h-[960px]'
       />
       <div className='flex flex-col gap-1 py-2 lg:flex-row'>

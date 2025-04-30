@@ -49,6 +49,9 @@ export default function UploadArea() {
       <b className='my-1 block font-semibold'>
         {currentFiles.length === 0 ? '' : 'Selected Files'}
       </b>
+      <h4 className='text-muted-foreground/70 my-2 text-center text-lg'>
+        {currentFiles.length <= 0 ? 'No Files selected yet' : ''}
+      </h4>
       <ul className='mx-auto flex w-full flex-col gap-3'>
         {currentFiles.map((value, index) => (
           <li

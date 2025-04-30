@@ -5,6 +5,7 @@ import { filesTable, user, vaultsTable } from '@/db/schema';
 import { eq, like, or } from 'drizzle-orm';
 
 export default async function searchVaultsByQuery(query: string) {
+  if (query.length < 3) return null;
   try {
     const res = await db
       .select({
@@ -16,7 +17,7 @@ export default async function searchVaultsByQuery(query: string) {
         authorName: user.name,
       })
       .from(vaultsTable)
-      .fullJoin(user, eq(vaultsTable.vaultAuthorID, user.id))
+      .leftJoin(user, eq(vaultsTable.vaultAuthorID, user.id))
       .where(
         or(
           like(vaultsTable.vaultName, `%${query}%`),
