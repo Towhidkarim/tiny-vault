@@ -14,6 +14,7 @@ import { routes } from '@/lib/constants';
 import { env } from '@/env';
 import { Badge } from './ui/badge';
 import { Folder } from 'lucide-react';
+import { timeAgo } from '@/lib/utils';
 const baseUrl = env.NEXT_PUBLIC_APP_BASE_URL;
 
 type TSearchResultProps = Exclude<
@@ -46,9 +47,16 @@ export default function SearchResults({
                 </Badge>
               </div>
             </div>
-            <CardDescription>
-              by&nbsp;
-              {result.authorID ? <span>{result.authorName}</span> : 'Anonymous'}
+            <CardDescription className='flex flex-row justify-between'>
+              <span>
+                by&nbsp;
+                {result.authorID ? (
+                  <span>{result.authorName}</span>
+                ) : (
+                  'Anonymous'
+                )}
+              </span>
+              <span> {timeAgo(Number(result.createdAt))}</span>
             </CardDescription>
           </CardHeader>
           <CardContent>

@@ -15,6 +15,7 @@ export default async function searchVaultsByQuery(query: string) {
         vaultUrlID: vaultsTable.vaultURLID,
         authorID: user.id,
         authorName: user.name,
+        createdAt: vaultsTable.createdAt,
       })
       .from(vaultsTable)
       .leftJoin(user, eq(vaultsTable.vaultAuthorID, user.id))

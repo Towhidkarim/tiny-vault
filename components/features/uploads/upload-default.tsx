@@ -41,10 +41,12 @@ import { defaultUploadFormSchema } from '@/lib/typeschema/forms';
 import StatusIndicator from '@/components/ui/status-indicator';
 import { UploadCompletionAlert } from './UploadCompleteAlert';
 import { routes } from '@/lib/constants';
+import { useSession } from '@/lib/auth-client';
 
 const formSchema = defaultUploadFormSchema;
 
 export default function UploadDefault() {
+  const { data: session } = useSession();
   const [currentFiles] = useAtom(filesToBeUploaded);
   const currentNonEmptyFiles = currentFiles.filter((item) => item.size !== 0);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -112,7 +114,7 @@ export default function UploadDefault() {
       }, 850);
     },
     onUploadError: (error) => {
-      console.log(error);
+      // console.log(error);
       toast.error('Error!', {
         description: 'A server side error Occured while uploading',
       });
@@ -184,6 +186,11 @@ export default function UploadDefault() {
           className='w-full lg:w-1/4'
         >
           <div className='border-muted sticky top-10 flex w-full flex-col gap-5 rounded-2xl border p-4'>
+            <h2 className='text-center font-semibold'>
+              {session?.user
+                ? `${session.user.name.split(' ')[0]}'s vault`
+                : 'Anonymous Vault'}
+            </h2>
             <FormField
               control={form.control}
               name='vaultName'

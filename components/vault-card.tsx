@@ -14,6 +14,7 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import Link from 'next/link';
 import { routes } from '@/lib/constants';
+import { timeAgo } from '@/lib/utils';
 
 type TVaultCardProps = {
   id: string;
@@ -21,7 +22,7 @@ type TVaultCardProps = {
   vaultAuthorID: string | null;
   vaultDescription: string | null;
   vaultFileIds: string[];
-  visibility: 'private' | 'public';
+  visibility: 'unlisted' | 'public';
   vaultURLID: string;
   password: string | null;
   createdAt: string | null;
@@ -79,7 +80,13 @@ export default function VaultCard({
             )}
           </div>
         </div>
-        <CardDescription>by {userName.split(' ')[0]}</CardDescription>
+        <CardDescription className='flex flex-row justify-between'>
+          <span>by {userName.split(' ')[0]}</span>
+          <span className='mt-0.5 ml-4 text-sm'>
+            {' '}
+            {timeAgo(Number(createdAt))}
+          </span>
+        </CardDescription>
       </CardHeader>
       <CardContent className='flex min-h-20 flex-col justify-start space-y-3'>
         <p className='text-sm'>
@@ -125,7 +132,7 @@ export default function VaultCard({
         <Button className='w-full'>
           <Link
             target='_blank'
-            href={`${window.origin}/${routes.vaultRoute}/${vaultURLID}`}
+            href={`${window?.origin}/${routes.vaultRoute}/${vaultURLID}`}
           >
             Open Vault
           </Link>

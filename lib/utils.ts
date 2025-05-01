@@ -57,3 +57,29 @@ export function getFileType({
     return 'plaintext';
   else return 'other';
 }
+
+export function timeAgo(timestamp: number) {
+  const now = Date.now();
+  const seconds = Math.floor((now - timestamp) / 1000);
+
+  const intervals: [number, string][] = [
+    [60, 's'],
+    [60, 'm'],
+    [24, 'h'],
+    [7, 'd'],
+    [4.34524, 'w'], // average number of weeks per month
+    [12, 'month'],
+    [Number.POSITIVE_INFINITY, 'y'],
+  ];
+  let i = 0;
+  let time = seconds;
+
+  while (i < intervals.length - 1 && time >= intervals[i][0]) {
+    time = time / intervals[i][0];
+    i++;
+  }
+
+  const roundedTime = Math.floor(time);
+  const unit = intervals[i][1];
+  return `${roundedTime}${unit} ago`;
+}
