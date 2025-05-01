@@ -85,13 +85,13 @@ export function UploadCompletionAlert({
             </p>
           )}
         </div>
-        <Button variant='outline' asChild>
+        <Button variant='default' asChild>
           <Link href={content} target='_blank'>
             Open Vault
           </Link>
         </Button>
         <AlertDialogFooter className='flex flex-col'>
-          <AlertDialogAction className='w-full'>
+          <AlertDialogAction className='bg-destructive text-primary-foreground w-full'>
             {actionLabel}
           </AlertDialogAction>
         </AlertDialogFooter>

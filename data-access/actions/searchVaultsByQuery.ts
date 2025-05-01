@@ -2,7 +2,7 @@
 
 import { db } from '@/db';
 import { filesTable, user, vaultsTable } from '@/db/schema';
-import { eq, like, or } from 'drizzle-orm';
+import { and, eq, like, not, or } from 'drizzle-orm';
 
 export default async function searchVaultsByQuery(query: string) {
   if (query.length < 3) return null;
@@ -19,9 +19,12 @@ export default async function searchVaultsByQuery(query: string) {
       .from(vaultsTable)
       .leftJoin(user, eq(vaultsTable.vaultAuthorID, user.id))
       .where(
-        or(
-          like(vaultsTable.vaultName, `%${query}%`),
-          like(user.name, `%${query}%`),
+        and(
+          or(
+            like(vaultsTable.vaultName, `%${query}%`),
+            like(user.name, `%${query}%`),
+          ),
+          not(eq(vaultsTable.visibility, 'unlisted')),
         ),
       );
 

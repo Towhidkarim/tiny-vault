@@ -226,7 +226,6 @@ export default function UploadDefault() {
                 <FormItem>
                   <FormLabel>Visibility</FormLabel>
                   <Select
-                    disabled
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
@@ -235,7 +234,7 @@ export default function UploadDefault() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value='public'>Public</SelectItem>
-                      <SelectItem value='private'>Private</SelectItem>
+                      <SelectItem value='unlisted'>Unlisted</SelectItem>
                     </SelectContent>
                   </Select>
                   <span className='text-muted-foreground ml-2 text-xs font-normal'>

@@ -79,7 +79,7 @@ export const vaultsTable = sqliteTable('tv_vaults', {
   vaultFileIds: text('vaultFileIds', { mode: 'json' })
     .$type<string[]>()
     .notNull(),
-  visibility: text('visibility', { enum: ['private', 'public'] }).notNull(),
+  visibility: text('visibility', { enum: ['unlisted', 'public'] }).notNull(),
   vaultURLID: text('vaultURLID').notNull(),
   password: text('password'),
   createdAt: text('createdAt').default(sql`(current_timestamp)`),
