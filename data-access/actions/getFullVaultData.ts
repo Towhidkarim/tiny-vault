@@ -18,6 +18,7 @@ export default async function getFullVaultData(vaultURLID: string) {
 
     const fullVaultData = {
       id: vaultData.id,
+      authorId: vaultData.vaultAuthorID,
       vaultName: vaultData.vaultName,
       vaultPassword: vaultData.password,
       vaultDescription: vaultData.vaultDescription,
