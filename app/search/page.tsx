@@ -1,5 +1,6 @@
 import Navbar from '@/components/navbar';
 import SearchResults from '@/components/search-results';
+import { SearchBar } from '@/components/SearchBar';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -32,8 +33,8 @@ export default async function page({
   const NotFound = () => (
     <main>
       <Navbar />
-      <section className='mx-auto w-full max-w-7xl px-4'>
-        <h1 className='absolute top-1/2 left-1/2 -translate-1/2 text-xl font-semibold'>
+      <section className='mx-auto px-4 w-full max-w-7xl'>
+        <h1 className='top-1/2 left-1/2 absolute font-semibold text-xl -translate-1/2'>
           No results found
         </h1>
       </section>
@@ -48,8 +49,11 @@ export default async function page({
   return (
     <main>
       <Navbar />
-      <section className='mx-auto mt-3 mb-10 w-full max-w-7xl px-4'>
-        <h4 className='text-muted-foreground my-6 text-center'>
+      <section className='mx-auto mt-3 mb-10 px-4 w-full max-w-7xl'>
+        <div className='relative mx-auto mt-3 w-full max-w-lg'>
+          <SearchBar />
+        </div>
+        <h4 className='my-6 text-muted-foreground text-center'>
           Showing {searchResults.length} Results for <b> '{searchQuery}'</b>
         </h4>
         <SearchResults results={searchResults} />

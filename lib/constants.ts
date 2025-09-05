@@ -38,6 +38,8 @@ export const routes = {
   signIn: '/signin',
   signUp: '/signup',
   dashboard: '/dashboard',
+  howTo: '/how-to',
+  create: '/create',
 } as const;
 
 export const FILE_TYPES = [
@@ -50,6 +52,7 @@ export const FILE_TYPES = [
 
 export const QUERY_KEYS = {
   textFiles: 'text-file',
+  recentVaults: 'recent-vaults',
 };
 
 export const redisKeys = {

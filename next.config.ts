@@ -12,6 +12,11 @@ const nextConfig: NextConfig = {
         hostname: 'hqu5dftak8.ufs.sh',
         pathname: '/f/*',
       },
+      {
+        protocol: 'https',
+        hostname: 'raw.githubusercontent.com',
+        pathname: '/Towhidkarim/**',
+      },
     ],
   },
 };
