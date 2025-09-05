@@ -1,3 +1,4 @@
+'use cleint';
 import DefaultWrapper from '@/components/default-wrapper';
 import SectionSubtitle from '@/components/SectionSubtitle';
 import SectionTitle from '@/components/SectionTitle';

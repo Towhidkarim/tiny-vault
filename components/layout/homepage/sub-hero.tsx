@@ -1,5 +1,8 @@
 import DefaultWrapper from '@/components/default-wrapper';
+import { Button } from '@/components/ui/button';
+import { routes } from '@/lib/constants';
 import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react';
 
 export default function SubHeroSection() {
@@ -23,6 +26,13 @@ export default function SubHeroSection() {
           <div className='absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-white/40' />
         </div>
       </figure>
+      <div className='place-content-center grid w-full'>
+        <Button className='mx-auto text-xl scale-110' asChild>
+          <Link href={routes.create} prefetch>
+            Creat a Vault Now!
+          </Link>
+        </Button>
+      </div>
     </DefaultWrapper>
   );
 }

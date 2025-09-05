@@ -18,7 +18,6 @@ import { Badge } from '@/components/ui/badge';
 import FooterSection from '../homepage/footer';
 import { useSession } from '@/lib/auth-client';
 import { useMutation } from '@tanstack/react-query';
-import CreateReviewAction from '@/lib/actions/CreateReviewAction';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,14 +29,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { ReviewMarquee } from './review-marqueue';
 import SectionTitle from '@/components/SectionTitle';
+import CreateFeedbackAction from '@/lib/actions/CreateFeedbackAction';
 
-export default function ReviewsPage() {
+export default function ContactForm() {
   const session = useSession();
-
-  const [rating, setRating] = useState(0);
-  const [hoveredRating, setHoveredRating] = useState(0);
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
@@ -48,11 +44,10 @@ export default function ReviewsPage() {
     setEmail(session.data?.user.email ?? '');
   }, [session.data]);
 
-  const { mutate: submitReview, isPending } = useMutation({
-    mutationFn: CreateReviewAction,
+  const { mutate: submitFeedback, isPending } = useMutation({
+    mutationFn: CreateFeedbackAction,
     onSuccess: ({ success }) => {
       setEmail(session.data?.user.email ?? '');
-      setRating(0);
       setMessage('');
       if (success) setIsSubmitted(true);
     },
@@ -60,38 +55,13 @@ export default function ReviewsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !message || !name || rating === 0) return;
-
-    submitReview({ email, name, rating, review: message });
-  };
-
-  const renderStars = () => {
-    return Array.from({ length: 5 }, (_, index) => {
-      const starValue = index + 1;
-      return (
-        <button
-          key={index}
-          type='button'
-          className={`text-2xl transition-colors duration-200 ${
-            starValue <= (hoveredRating || rating)
-              ? 'text-yellow-400'
-              : 'text-gray-300'
-          } hover:text-yellow-400`}
-          onClick={() => setRating(starValue)}
-          onMouseEnter={() => setHoveredRating(starValue)}
-          onMouseLeave={() => setHoveredRating(0)}
-        >
-          <Star className='fill-current w-8 h-8' />
-        </button>
-      );
-    });
+    if (!email || !message || !name) return;
+    submitFeedback({ email, name, message });
   };
 
   return (
     <div className='bg-gray-50 min-h-screen'>
       <div className='mx-auto px-4 py-16 container'>
-        <SectionTitle>User Reviews</SectionTitle>
-        <ReviewMarquee />
         <br />
         <div className='mx-auto max-w-2xl'>
           {/* Header */}
@@ -100,24 +70,25 @@ export default function ReviewsPage() {
               variant='secondary'
               className='bg-blue-50 mb-4 border-blue-200 text-blue-700'
             >
-              Share Your Experience
+              Contact Us
             </Badge>
             <h1 className='mb-4 font-bold text-gray-900 text-4xl'>
-              Submit a Review
+              Leave us your feedback
             </h1>
             <p className='text-gray-600 text-lg'>
-              Help others discover Tiny Vault by sharing your experience with
-              our secure file sharing platform.
+              Help us improve Tiny Vault by sharing your experience and through
+              your feedbacks.
             </p>
           </div>
           <AlertDialog onOpenChange={setIsSubmitted} open={isSubmitted}>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle className='text-center'>
-                  Submitted Successfully!
+                  Feedback Submitted Successfully!
                 </AlertDialogTitle>
                 <AlertDialogDescription>
-                  Your Review has been submitted and awating moderation
+                  Your message has been sent succesfully! You will be contacted
+                  soon if necessary
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -131,11 +102,10 @@ export default function ReviewsPage() {
           <Card className='shadow-sm border-gray-200'>
             <CardHeader>
               <CardTitle className='text-gray-900 text-xl'>
-                Your Review
+                Contact Form
               </CardTitle>
               <CardDescription>
-                Tell us about your experience using Tiny Vault for file sharing
-                and collaboration.
+                Fill in your contact information
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -176,52 +146,28 @@ export default function ReviewsPage() {
                   />
                 </div>
 
-                {/* Star Rating */}
-                <div>
-                  <label className='block mb-3 font-medium text-gray-700 text-sm'>
-                    Rating
-                  </label>
-                  <div className='flex items-center gap-1 mb-2'>
-                    {renderStars()}
-                  </div>
-                  <p className='text-gray-500 text-sm'>
-                    {rating === 0 && 'Please select a rating'}
-                    {rating === 1 && 'Poor - Needs significant improvement'}
-                    {rating === 2 && 'Fair - Below expectations'}
-                    {rating === 3 && 'Good - Meets expectations'}
-                    {rating === 4 && 'Very Good - Exceeds expectations'}
-                    {rating === 5 && 'Excellent - Outstanding experience'}
-                  </p>
-                </div>
-
                 {/* Review Message */}
                 <div>
                   <label
                     htmlFor='message'
                     className='block mb-2 font-medium text-gray-700 text-sm'
                   >
-                    Your Review
+                    Your Message
                   </label>
                   <Textarea
                     id='message'
-                    placeholder="Share your thoughts about Tiny Vault's features, ease of use, security, or any other aspects of your experience..."
+                    placeholder='Your feedback here'
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     required
-                    rows={5}
-                    className='w-full resize-none'
+                    className='w-full h-32 resize-none'
                   />
-                  <p className='mt-1 text-gray-500 text-sm'>
-                    {message.length}/500 characters
-                  </p>
                 </div>
 
                 {/* Submit Button */}
                 <Button
                   type='submit'
-                  disabled={
-                    !email || !message || !name || rating === 0 || isPending
-                  }
+                  disabled={!email || !message || !name || isPending}
                   className='bg-gradient-to-r from-blue-600 hover:from-blue-700 to-purple-600 hover:to-purple-700 disabled:opacity-50 px-6 py-3 rounded-lg w-full font-medium text-white transition-all duration-200 disabled:cursor-not-allowed'
                 >
                   {isPending ? (

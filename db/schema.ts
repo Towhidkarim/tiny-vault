@@ -84,4 +84,23 @@ export const vaultsTable = sqliteTable('tv_vaults', {
   password: text('password'),
   createdAt: text('createdAt').default(sql`(current_timestamp)`),
 });
+
+export const reviewsTable = sqliteTable('tv_reviews', {
+  id: text('id').primaryKey().notNull(),
+  name: text().notNull(),
+  email: text().notNull(),
+  rating: integer().notNull(),
+  review: text().notNull(),
+  createdAt: text('createdAt').default(sql`(current_timestamp)`),
+  approved: integer({ mode: 'boolean' }).default(false),
+});
+
+export const feedbackTable = sqliteTable('tv_feedback', {
+  id: text('id').primaryKey().notNull(),
+  name: text().notNull(),
+  email: text().notNull(),
+  message: text().notNull(),
+  createdAt: text('createdAt').default(sql`(current_timestamp)`),
+});
+
 export type TValultsTable = typeof vaultsTable.$inferSelect;
