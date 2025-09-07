@@ -1,6 +1,6 @@
 import { db } from '@/db';
 import { vaultsTable } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 
 export default async function getVaultDataByURL(slug: string) {
   'use server';
@@ -23,7 +23,8 @@ export async function getVaultsByUserID(userID: string) {
     const results = await db
       .select()
       .from(vaultsTable)
-      .where(eq(vaultsTable.vaultAuthorID, userID));
+      .where(eq(vaultsTable.vaultAuthorID, userID))
+      .orderBy(desc(vaultsTable.createdAt));
     return results;
   } catch (error) {
     console.error(error);

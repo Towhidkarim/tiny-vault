@@ -63,12 +63,7 @@ export default function FAQSection() {
       <SectionTitle>FAQ</SectionTitle>
       <SectionSubtitle>Answers to commonly asked questions</SectionSubtitle>
       <div className='space-y-4 mx-auto my-5 max-w-2xl'>
-        <Accordion
-          type='single'
-          collapsible
-          className='w-full'
-          defaultValue='3'
-        >
+        <Accordion type='single' collapsible className='w-full'>
           {items.map((item, index) => (
             <AccordionItem
               value={index.toString()}

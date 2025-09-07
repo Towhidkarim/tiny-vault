@@ -8,7 +8,9 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import {
+  Edit,
   EllipsisVertical,
+  ExternalLink,
   Eye,
   EyeOff,
   FolderIcon,
@@ -25,6 +27,7 @@ import Link from 'next/link';
 import { routes } from '@/lib/constants';
 import { timeAgo } from '@/lib/utils';
 import DeleteButton from './features/delete-vault/delete-button';
+import VaultEditDialog from './features/edit-vault/vault-edit-dialog';
 
 type TVaultCardProps = {
   id: string;
@@ -65,12 +68,12 @@ export default function VaultCard({
       className='group flex flex-col justify-between hover:shadow-md max-h-96 overflow-hidden transition-all'
     >
       <CardHeader className='pb-3'>
-        <div className='flex justify-between items-center'>
+        <div className='flex flex-row justify-between items-center'>
           <div className='flex items-center gap-2'>
             <FolderIcon className='text-primary' />
             <CardTitle className='text-xl'>{vaultName}</CardTitle>
           </div>
-          <div className='flex flex-row items-center gap-1'>
+          <div className='flex flex-row items-center gap-1 transition translate-x-10 group-hover:translate-x-0'>
             {visibility === 'public' ? (
               <Badge
                 variant='outline'
@@ -91,6 +94,9 @@ export default function VaultCard({
             {/* <Button variant='ghost' size='sm' className='w-4 h-8'>
               <EllipsisVertical size={24} />
             </Button> */}
+            <div className='scale-x-0 group-hover:scale-x-100'>
+              <VaultEditDialog vaultData={vaultData} />
+            </div>
           </div>
         </div>
         <CardDescription className='flex flex-row justify-between'>
@@ -110,7 +116,7 @@ export default function VaultCard({
           )}
         </p>
 
-        {password && (
+        {password ? (
           <div className='flex items-center gap-2 bg-muted/30 p-2 rounded-md'>
             <Lock className='w-4 h-4 text-muted-foreground' />
             <div className='flex items-center gap-2'>
@@ -139,14 +145,20 @@ export default function VaultCard({
               </Tooltip>
             </div>
           </div>
+        ) : (
+          <div className='flex items-center gap-2 bg-muted/30 p-2 rounded-md'>
+            <code className=''>Not password protected</code>
+          </div>
         )}
       </CardContent>
       <CardFooter className='flex flex-row justify-between gap-2 bg-muted/10 pt-3'>
         <Button className='w-full group-hover:w-4/5'>
           <Link
             target='_blank'
+            className='flex flex-row gap-2'
             href={`${window?.origin}/${routes.vaultRoute}/${vaultURLID}`}
           >
+            <ExternalLink />
             Open Vault
           </Link>
         </Button>

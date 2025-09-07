@@ -30,9 +30,11 @@ import { routes } from '@/lib/constants';
 export default function UserDropdownMenu({
   userFullName,
   email,
+  role,
 }: {
   userFullName: string;
   email: string;
+  role: string;
 }) {
   const router = useRouter();
 
@@ -51,9 +53,9 @@ export default function UserDropdownMenu({
       <DropdownMenuTrigger asChild>
         <Button
           variant='ghost'
-          className='rounded-full p-1 hover:bg-transparent'
+          className='hover:bg-transparent p-1 rounded-full'
         >
-          <Avatar className='ring-primary/40 transition-all hover:ring-1'>
+          <Avatar className='ring-primary/40 hover:ring-1 transition-all'>
             <AvatarFallback className='bg-primary/10'>
               {userFullName[0]}
             </AvatarFallback>
@@ -69,16 +71,24 @@ export default function UserDropdownMenu({
         <DropdownMenuLabel className='text-center'>
           {userFullName}
           <br />
-          <p className='my-1 text-center text-xs font-normal'>{email}</p>
+          <p className='my-1 font-normal text-xs text-center'>{email}</p>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        {role === 'admin' && (
+          <DropdownMenuItem asChild>
+            <Link href={routes.admin} className='hover:cursor-pointer'>
+              <UserRound /> Admin Panel
+            </Link>
+          </DropdownMenuItem>
+        )}
+
         <DropdownMenuItem asChild>
           <Link href={routes.dashboard} className='hover:cursor-pointer'>
-            <UserRound /> My Vaults
+            <UserRound /> Dashboard
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href={'/'} className='hover:cursor-pointer'>
+          <Link href={routes.create} className='hover:cursor-pointer'>
             <VaultIcon /> Create Vault
           </Link>
         </DropdownMenuItem>

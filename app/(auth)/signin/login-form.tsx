@@ -6,15 +6,17 @@ import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 import { routes } from '@/lib/constants';
 import React, { useState } from 'react';
-import { signIn } from '@/lib/auth-client';
+import { getSession, signIn } from '@/lib/auth-client';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'form'>) {
   const [isPending, setIsPending] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -27,13 +29,15 @@ export function LoginForm({
     const { data, error } = await signIn.email({
       email,
       password,
-      callbackURL: '/',
       fetchOptions: {
         onRequest: () => setIsPending(true),
-        onSuccess: () => {
+        onSuccess: async () => {
           toast.success('Signed In Succesfully', {
             description: 'Redirecting to home',
           });
+          const { data } = await getSession();
+          if (data?.user.role === 'admin') router.push(routes.admin);
+          else router.push(routes.dashboard);
         },
         onError: () => setIsPending(false),
       },
@@ -49,13 +53,13 @@ export function LoginForm({
       {...props}
     >
       <div className='flex flex-col items-center gap-2 text-center'>
-        <h1 className='text-2xl font-bold'>Login to your account</h1>
+        <h1 className='font-bold text-2xl'>Login to your account</h1>
         <p className='text-muted-foreground text-sm text-balance'>
           Enter your email below to login to your account
         </p>
       </div>
-      <div className='grid gap-6'>
-        <div className='grid gap-2'>
+      <div className='gap-6 grid'>
+        <div className='gap-2 grid'>
           <Label htmlFor='email'>Email</Label>
           <Input
             id='email'
@@ -65,12 +69,12 @@ export function LoginForm({
             required
           />
         </div>
-        <div className='grid gap-2'>
+        <div className='gap-2 grid'>
           <div className='flex items-center'>
             <Label htmlFor='password'>Password</Label>
             <a
               href='#'
-              className='ml-auto text-sm underline-offset-4 hover:underline'
+              className='ml-auto text-sm hover:underline underline-offset-4'
             >
               Forgot your password?
             </a>
@@ -95,8 +99,8 @@ export function LoginForm({
             'Sign In'
           )}
         </Button>
-        {/* <div className='after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t'>
-          <span className='bg-background text-muted-foreground relative z-10 px-2'>
+        {/* <div className='after:top-1/2 after:z-0 after:absolute relative after:inset-0 after:flex after:items-center after:border-t after:border-border text-sm text-center'>
+          <span className='z-10 relative bg-background px-2 text-muted-foreground'>
             Or continue with
           </span>
         </div>
@@ -110,7 +114,7 @@ export function LoginForm({
           Login with GitHub
         </Button> */}
       </div>
-      <div className='text-center text-sm'>
+      <div className='text-sm text-center'>
         Don&apos;t have an account?{' '}
         <Link href={routes.signUp} className='underline underline-offset-4'>
           Sign up

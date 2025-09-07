@@ -40,6 +40,15 @@ export const routes = {
   dashboard: '/dashboard',
   howTo: '/how-to',
   create: '/create',
+  userStats: '/dashboard/stats',
+  userSettings: '/dashboard/settings',
+  userSupport: '/dashboard/support',
+  admin: '/admin',
+  adminManageVaults: '/admin/manage-vaults',
+  adminActivities: '/admin/activities',
+  adminReviews: '/admin/reviews',
+  adminMailbox: '/admin/mailbox',
+  adminSettings: '/admin/settings',
 } as const;
 
 export const FILE_TYPES = [

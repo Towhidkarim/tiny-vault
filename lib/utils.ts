@@ -1,7 +1,21 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { ALLOWED_TEXT_EXTENSIONS, FILE_TYPES } from './constants';
-
+import {
+  ChevronsUpDown,
+  Home,
+  Search,
+  Settings,
+  User,
+  ChartNoAxesCombined,
+  Heart,
+  Shield,
+  HelpCircle,
+  ChartNoAxesGantt,
+  ChartColumnBig,
+  Star,
+  Mail,
+} from 'lucide-react';
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -82,4 +96,25 @@ export function timeAgo(timestamp: number) {
   const roundedTime = Math.floor(time);
   const unit = intervals[i][1];
   return `${roundedTime}${unit} ago`;
+}
+
+const iconMap = {
+  ChevronsUpDown,
+  Home,
+  Search,
+  Settings,
+  User,
+  ChartNoAxesCombined,
+  Heart,
+  Shield,
+  ChartNoAxesGantt,
+  ChartColumnBig,
+  Star,
+  Mail,
+};
+
+export type IconName = keyof typeof iconMap;
+
+export function getLucideIcon(name: IconName) {
+  return iconMap[name] ?? HelpCircle;
 }

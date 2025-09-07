@@ -16,9 +16,8 @@ export default async function page() {
   if (!vaultsByUser)
     return (
       <main>
-        <Navbar />
-        <section className='mx-auto w-full max-w-7xl px-4'>
-          <h1 className='absolute top-1/2 left-1/2 -translate-1/2 text-xl font-semibold'>
+        <section className='mx-auto px-4 w-full max-w-7xl'>
+          <h1 className='top-1/2 left-1/2 absolute font-semibold text-xl -translate-1/2'>
             Something went wrong
           </h1>
         </section>
@@ -27,15 +26,14 @@ export default async function page() {
 
   return (
     <main>
-      <Navbar />
-      <section className='mx-auto w-full max-w-7xl px-4'>
-        <h1 className='mt-10 mb-5 text-2xl font-bold'>
-          My Vaults{' '}
-          <span className='mr-4 align-super text-base font-normal'>
+      <section className='mx-auto px-4 w-full max-w-7xl'>
+        <h1 className='mt-10 mb-5 font-bold text-2xl'>
+          Recent Vaults{' '}
+          <span className='mr-4 font-normal text-base align-super'>
             ({vaultsByUser.length})
           </span>{' '}
         </h1>
-        <div className='my-10 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3'>
+        <div className='gap-5 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 my-10'>
           {vaultsByUser.map((vault, index) => (
             <VaultCard
               key={vault.id}

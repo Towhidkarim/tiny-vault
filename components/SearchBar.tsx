@@ -4,7 +4,7 @@ import { Input } from './ui/input';
 
 export function SearchBar() {
   return (
-    <form action='/search' className='flex flex-row gap-0 w-full'>
+    <form action='/search' className='flex flex-row gap-0 my-3 px-2 w-full'>
       <Input
         name='query'
         type='text'
