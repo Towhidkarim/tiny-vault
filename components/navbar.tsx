@@ -24,6 +24,7 @@ import {
 const navItems = [
   { title: 'Create Vault', url: '/create' },
   { title: 'How to', url: '/how-to' },
+  { title: 'Search', url: '/search' },
   { title: 'Reviews', url: '/reviews' },
   { title: 'Contact Me', url: '/contact' },
 ];

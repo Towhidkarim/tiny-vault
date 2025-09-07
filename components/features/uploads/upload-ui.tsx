@@ -15,16 +15,16 @@ export default function UploadUi() {
   return (
     <>
       <UploadArea />
-      <div className='mx-auto flex w-full max-w-3xl flex-col items-center justify-center gap-5'>
+      <div className='flex flex-col justify-center items-center gap-5 mx-auto w-full max-w-3xl'>
         <br />
         <DividerWithText text='Or' className='mx-auto w-44' />
-        <div className='mx-auto block w-full'>
-          <Accordion type='single' collapsible>
+        <div className='block mx-auto w-full'>
+          <Accordion type='single' defaultValue='item-1' collapsible>
             <AccordionItem
               value='item-1'
-              className='border-primary/40 rounded-xl border p-2 last:border-b'
+              className='p-2 border border-primary/40 last:border-b rounded-xl'
             >
-              <AccordionTrigger className='hover:bg-muted-foreground/5 cursor-pointer px-2 font-semibold hover:no-underline'>
+              <AccordionTrigger className='hover:bg-muted-foreground/5 px-2 font-semibold hover:no-underline cursor-pointer'>
                 Edit or Add Your Text Files
               </AccordionTrigger>
               <AccordionContent className='p-2'>

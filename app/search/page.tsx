@@ -33,9 +33,12 @@ export default async function page({
   const NotFound = () => (
     <main>
       <Navbar />
+      <div className='relative mx-auto mt-3 w-full max-w-lg'>
+        <SearchBar />
+      </div>
       <section className='mx-auto px-4 w-full max-w-7xl'>
-        <h1 className='top-1/2 left-1/2 absolute font-semibold text-xl -translate-1/2'>
-          No results found
+        <h1 className='top-1/2 left-1/2 absolute font-semibold text-muted-foreground text-xl -translate-1/2'>
+          Search for vaults by vault names or user names
         </h1>
       </section>
     </main>

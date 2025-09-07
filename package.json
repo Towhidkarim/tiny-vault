@@ -38,6 +38,7 @@
     "jose": "^6.0.10",
     "jotai": "^2.12.2",
     "jsonwebtoken": "^9.0.2",
+    "jszip": "^3.10.1",
     "lucide-react": "^0.486.0",
     "nanoid": "^5.1.5",
     "next": "15.3.0",

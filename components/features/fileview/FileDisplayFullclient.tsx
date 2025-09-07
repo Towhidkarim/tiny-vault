@@ -4,13 +4,26 @@ import getFullVaultData from '@/data-access/actions/getFullVaultData';
 import { cn, formatFileSize } from '@/lib/utils';
 import { useState } from 'react';
 
-import { ArrowDownToLine, CircleX } from 'lucide-react';
+import JSZip, { file } from 'jszip';
+
+import {
+  ArrowDownToLine,
+  CircleX,
+  Download,
+  FileArchive,
+  Loader2,
+} from 'lucide-react';
 import ImageFileRenderer from './ImageFileRenderer';
 import TextFileRenderer from './TextFileRenderer';
 import { toast } from 'sonner';
 import Image from 'next/image';
 import { getFileIconImage, getIconFromCategory } from '@/lib/functions';
-import { notifyManager, useQueries, useQuery } from '@tanstack/react-query';
+import {
+  notifyManager,
+  useMutation,
+  useQueries,
+  useQuery,
+} from '@tanstack/react-query';
 import GenerateMarkupAction from './GenerateMarkupAction';
 import { QUERY_KEYS } from '@/lib/constants';
 
@@ -25,6 +38,7 @@ export default function FileDisplayFullclient({
   const currentFile = filesData[selectedFileIndex];
 
   const [isDownloading, setIsDownloading] = useState(false);
+
   const downloadCurrentFile = async () => {
     try {
       setIsDownloading(true);
@@ -46,8 +60,35 @@ export default function FileDisplayFullclient({
     }
   };
 
+  const downloadAllFilesAsZip = async () => {
+    const zip = new JSZip();
+    await Promise.all(
+      filesData.map(async (file, index) => {
+        const response = await fetch(file.fileURL);
+        if (!response.ok) throw new Error(`Failed to fetch ${file.fileURL}`);
+        const blob = await response.blob();
+        const filename = file.fileName;
+        zip.file(filename, blob);
+      })
+    );
+
+    const content = await zip.generateAsync({ type: 'blob' });
+
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(content);
+    link.download = vaultName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(link.href);
+  };
+
+  const { mutate: downloadAsZip, isPending } = useMutation({
+    mutationFn: downloadAllFilesAsZip,
+  });
+
   const plaintextFiles = filesData.filter(
-    (file) => file.fileType === 'plaintext',
+    (file) => file.fileType === 'plaintext'
   );
   useQueries({
     queries: plaintextFiles.map((item) => ({
@@ -81,14 +122,14 @@ export default function FileDisplayFullclient({
       );
     else
       return (
-        <div className='mx-auto my-20 flex h-64 w-96 flex-col items-center justify-center gap-2'>
+        <div className='flex flex-col justify-center items-center gap-2 mx-auto my-20 w-96 h-64'>
           <CircleX size={72} className='text-destructive/65' />
           <h4>{currentFile.fileName}</h4>
           <h4 className='font-semibold'>No Preview Available</h4>
           <Button
             disabled={isDownloading}
             onClick={async () => downloadCurrentFile()}
-            className='bg-primary/75 text-base font-semibold'
+            className='bg-primary/75 font-semibold text-base'
           >
             <span>
               <ArrowDownToLine size={32} />
@@ -103,15 +144,15 @@ export default function FileDisplayFullclient({
 
   return (
     <>
-      <h1 className='text-center text-4xl font-bold'>{vaultName}</h1>
-      <h4 className='text-md mx-auto my-1 max-w-prose text-center'>
+      <h1 className='font-bold text-4xl text-center'>{vaultName}</h1>
+      <h4 className='mx-auto my-1 max-w-prose text-md text-center'>
         {vaultDescription}
       </h4>
       <br />
-      <div className='flex w-full flex-col-reverse gap-10 py-4 lg:flex-row lg:gap-0'>
+      <div className='flex lg:flex-row flex-col-reverse gap-10 lg:gap-0 py-4 w-full'>
         <div className='w-full lg:w-8/11'>
-          <div className='my-3 flex w-full flex-row justify-between px-6'>
-            <h3 className='text-lg font-semibold'>File Preview</h3>
+          <div className='flex flex-row justify-between my-3 px-6 w-full'>
+            <h3 className='font-semibold text-lg'>File Preview</h3>
             <Button
               disabled={isDownloading}
               onClick={() => downloadCurrentFile()}
@@ -123,13 +164,13 @@ export default function FileDisplayFullclient({
               {isDownloading ? 'Downloading...' : 'Download'}
             </Button>
           </div>
-          <div className='mx-auto flex min-h-96 w-[95%] flex-col justify-items-start rounded-lg border shadow'>
+          <div className='flex flex-col justify-items-start shadow mx-auto border rounded-lg w-[95%] min-h-96'>
             {getRendererComponent()}
           </div>
         </div>
         <div className='lg:w-3/11'>
-          <div className='sticky top-8 h-96 w-full rounded-lg border shadow'>
-            <h3 className='border-b py-3 text-center font-medium'>
+          <div className='top-8 sticky flex flex-col shadow border rounded-lg w-full h-96'>
+            <h3 className='py-3 border-b font-medium text-center'>
               Available Files
             </h3>
             <br />
@@ -137,14 +178,14 @@ export default function FileDisplayFullclient({
               {filesData.map((file, index) => (
                 <li
                   key={index}
-                  className='after:bg-muted-foreground/20 relative after:absolute after:-bottom-1.5 after:left-1/2 after:mx-auto after:h-px after:w-full after:-translate-x-1/2 after:scale-0 after:content-[""] not-last:after:scale-100'
+                  className='after:-bottom-1.5 after:left-1/2 after:absolute relative after:bg-muted-foreground/20 after:mx-auto after:w-full after:h-px after:content-[""] after:scale-0 not-last:after:scale-100 after:-translate-x-1/2'
                 >
                   <Button
                     className={cn(
-                      'flex w-full cursor-pointer items-center justify-start rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200',
+                      'flex justify-start items-center hover:bg-gray-200 px-4 py-2 rounded-lg w-full font-medium text-gray-700 text-sm cursor-pointer',
                       index == selectedFileIndex
                         ? 'bg-primary/75 hover:bg-primary/60 text-white'
-                        : '',
+                        : ''
                     )}
                     variant={selectedFileIndex == index ? 'default' : 'ghost'}
                     onClick={() => setSelectedFileIndex(index)}
@@ -159,6 +200,20 @@ export default function FileDisplayFullclient({
                 </li>
               ))}
             </ul>
+            <div className='my-2 mt-auto w-full'>
+              <Button
+                disabled={isPending}
+                className='flex flex-row gap-2 mx-auto w-4/5'
+                onClick={() => downloadAsZip()}
+              >
+                {isPending ? (
+                  <Loader2 className='animate-spin' />
+                ) : (
+                  <FileArchive />
+                )}
+                Download All as Zip
+              </Button>
+            </div>
           </div>
         </div>
       </div>

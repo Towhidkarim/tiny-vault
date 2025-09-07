@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
-import { routes } from '@/lib/constants';
+import { adminCreds, routes, userCreds } from '@/lib/constants';
 import React, { useState } from 'react';
 import { getSession, signIn } from '@/lib/auth-client';
 import { toast } from 'sonner';
@@ -17,13 +17,16 @@ export function LoginForm({
 }: React.ComponentPropsWithoutRef<'form'>) {
   const [isPending, setIsPending] = useState(false);
   const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const setCreds = (email: string, pass: string) => {
+    setEmail(email);
+    setPassword(pass);
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-
-    const email = formData.get('email')?.toString();
-    const password = formData.get('password')?.toString();
 
     if (!(email && password)) return;
     const { data, error } = await signIn.email({
@@ -58,6 +61,22 @@ export function LoginForm({
           Enter your email below to login to your account
         </p>
       </div>
+      <div className='flex flex-row justify-around items-center gap-2'>
+        <Button
+          type='button'
+          size='sm'
+          onClick={() => setCreds(userCreds.email, userCreds.pass)}
+        >
+          User Credential
+        </Button>
+        <Button
+          type='button'
+          size='sm'
+          onClick={() => setCreds(adminCreds.email, adminCreds.pass)}
+        >
+          Admin Credential
+        </Button>
+      </div>
       <div className='gap-6 grid'>
         <div className='gap-2 grid'>
           <Label htmlFor='email'>Email</Label>
@@ -65,6 +84,8 @@ export function LoginForm({
             id='email'
             type='email'
             name='email'
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             placeholder='m@example.com'
             required
           />
@@ -83,6 +104,8 @@ export function LoginForm({
             id='password'
             type='password'
             name='password'
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             placeholder='******'
             required
           />

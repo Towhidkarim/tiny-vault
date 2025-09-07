@@ -72,3 +72,13 @@ export const cookieKeys = {
   publicVaultCookie: 'public-valut-cookie',
   vaultPasswordCookie: 'vault-password-cookie',
 } as const;
+
+export const adminCreds = {
+  email: 'jack@mail.com',
+  pass: '12345678',
+} as const;
+
+export const userCreds = {
+  email: 'john@mail.com',
+  pass: '12345678',
+} as const;
