@@ -118,24 +118,24 @@ export default function FooterSection() {
               © {new Date().getFullYear()} TinyVault. All rights reserved.
             </div>
             <div className='flex space-x-8 text-sm'>
-              <a
-                href='/privacy'
+              <Link
+                href='/tos'
                 className='text-gray-500 hover:text-gray-900 transition-colors duration-200'
               >
                 Privacy Policy
-              </a>
-              <a
-                href='/terms'
+              </Link>
+              <Link
+                href='/tos'
                 className='text-gray-500 hover:text-gray-900 transition-colors duration-200'
               >
                 Terms of Service
-              </a>
-              <a
-                href='/security'
+              </Link>
+              <Link
+                href='/tos'
                 className='text-gray-500 hover:text-gray-900 transition-colors duration-200'
               >
                 Security
-              </a>
+              </Link>
             </div>
           </div>
         </div>
