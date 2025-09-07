@@ -16,7 +16,7 @@ export async function DelteVaultByURLIDAction(vaultURLID: string) {
   if (!session) return { success: false, message: 'Unauthorized' };
   const vaultData = await getFullVaultData(vaultURLID);
   if (!vaultData) return { success: false, message: 'Vault does not exist' };
-  if (session.user.id !== vaultData.authorId)
+  if (session.user.id !== vaultData.authorId && session.user.role !== 'admin')
     return { success: false, message: 'Unauthorized' };
   const fileIds = vaultData.filesData.map((file) => file.id);
 

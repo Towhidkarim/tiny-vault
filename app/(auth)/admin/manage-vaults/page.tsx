@@ -31,6 +31,7 @@ import VaultEditDialog from '@/components/features/edit-vault/vault-edit-dialog'
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { routes } from '@/lib/constants';
+import DeleteButton from '@/components/features/delete-vault/delete-button';
 
 const ITEMS_PER_PAGE = 15;
 
@@ -163,6 +164,9 @@ export default async function ManageVaultsPage({
                       <CopyButton vaultId={vault.vaultURLID} />
                       <LinkButton vaultId={vault.vaultURLID} />
                       <VaultEditDialog vaultData={vault} />
+                      <div className='w-10'>
+                        <DeleteButton vaultID={vault.vaultURLID} />
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

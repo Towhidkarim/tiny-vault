@@ -207,8 +207,9 @@ export default function HowToPage() {
                 size='lg'
                 variant='outline'
                 className='bg-transparent hover:bg-gray-50 border-gray-300'
+                asChild
               >
-                View Examples
+                <Link href={'/search?query=test'}>View Examples</Link>
               </Button>
             </div>
           </div>
