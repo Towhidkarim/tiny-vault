@@ -7,9 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ActivityChart } from './activity-chart';
 import { desc, sql } from 'drizzle-orm';
 
-export type VaultActivity = { month: string; count: number };
+type VaultActivity = { month: string; count: number };
 
-export async function getVaultActivityData() {
+async function getVaultActivityData() {
   // fetch only createdAt column
   const rows = await db
     .select({ createdAt: vaultsTable.createdAt })
