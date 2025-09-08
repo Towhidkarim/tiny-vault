@@ -3,43 +3,32 @@ import DefaultWrapper from '@/components/default-wrapper';
 import SectionSubtitle from '@/components/SectionSubtitle';
 import SectionTitle from '@/components/SectionTitle';
 import { AnimatedTestimonials } from '@/components/ui/animated-testimonials';
+import testimonyOne from '@/public/assets/images/testimony_one.jpg';
+import testimonyTwo from '@/public/assets/images/testimony_two.jpeg';
+import defaultAvatarFemale from '@/public/assets/images/avatar_female.svg';
 import React from 'react';
 
 const testimonials = [
   {
     quote:
-      "The attention to detail and innovative features have completely transformed our workflow. This is exactly what we've been looking for.",
-    name: 'Sarah Chen',
-    designation: 'Product Manager at TechFlow',
-    src: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=3560&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'Very useful for sharing important files, texts, and more. I find myself using this website quite a lot and have yet to face any problems or bugs. With the link-sharing feature, I can easily share my notes with other people if needed. It has a very simple yet aesthetic and user friendly design. Tiny Vault has become my go to tool for file sharing',
+    name: 'Raian Bin Kousar',
+    designation: 'Student at VU',
+    src: testimonyOne,
   },
   {
     quote:
-      "Implementation was seamless and the results exceeded our expectations. The platform's flexibility is remarkable.",
-    name: 'Michael Rodriguez',
-    designation: 'CTO at InnovateSphere',
-    src: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'I love how clean and simple the design is, it just works fine without any hassle.',
+    name: 'Aisha Rahman',
+    designation: 'Student at NYU',
+    src: defaultAvatarFemale,
   },
   {
     quote:
-      "This solution has significantly improved our team's productivity. The intuitive interface makes complex tasks simple.",
-    name: 'Emily Watson',
-    designation: 'Operations Director at CloudScale',
-    src: 'https://images.unsplash.com/photo-1623582854588-d60de57fa33f?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  },
-  {
-    quote:
-      "Outstanding support and robust features. It's rare to find a product that delivers on all its promises.",
-    name: 'James Kim',
-    designation: 'Engineering Lead at DataPro',
-    src: 'https://images.unsplash.com/photo-1636041293178-808a6762ab39?q=80&w=3464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  },
-  {
-    quote:
-      'The scalability and performance have been game-changing for our organization. Highly recommend to any growing business.',
-    name: 'Lisa Thompson',
-    designation: 'VP of Technology at FutureNet',
-    src: 'https://images.unsplash.com/photo-1624561172888-ac93c696e10c?q=80&w=2592&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      "Very useful when I want to take my codes from labs to elsewhere. Because of TinyVault, I don't need to carry around a pendrive all the time during class or lab times. The anonymous aspect makes it even better, zero signup, zero hassle",
+    name: 'Sadab Kibria',
+    designation: 'Student at RUET',
+    src: testimonyTwo,
   },
 ];
 

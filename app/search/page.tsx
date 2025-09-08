@@ -54,7 +54,7 @@ export default async function page({
       <Navbar />
       <section className='mx-auto mt-3 mb-10 px-4 w-full max-w-7xl'>
         <div className='relative mx-auto mt-3 w-full max-w-lg'>
-          <SearchBar />
+          <SearchBar value={searchQuery} />
         </div>
         <h4 className='my-6 text-muted-foreground text-center'>
           Showing {searchResults.length} Results for <b> '{searchQuery}'</b>

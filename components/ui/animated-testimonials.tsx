@@ -72,7 +72,7 @@ export const AnimatedTestimonials = ({
           <div className='relative w-full h-80'>
             {testimonials.map((testimonial, index) => (
               <div
-                key={testimonial.src}
+                key={index}
                 className={cn(
                   'absolute inset-0 origin-bottom transition-all duration-500 ease-in-out',
                   isActive(index)
@@ -91,7 +91,7 @@ export const AnimatedTestimonials = ({
                 }}
               >
                 <Image
-                  src={tempImage}
+                  src={testimonial.src}
                   alt={testimonial.name}
                   width={500}
                   height={500}

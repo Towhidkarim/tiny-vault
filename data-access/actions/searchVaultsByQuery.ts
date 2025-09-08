@@ -23,10 +23,10 @@ export default async function searchVaultsByQuery(query: string) {
         and(
           or(
             like(vaultsTable.vaultName, `%${query}%`),
-            like(user.name, `%${query}%`),
+            like(user.name, `%${query}%`)
           ),
-          not(eq(vaultsTable.visibility, 'unlisted')),
-        ),
+          not(eq(vaultsTable.visibility, 'unlisted'))
+        )
       );
 
     return res;

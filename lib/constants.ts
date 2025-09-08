@@ -43,12 +43,14 @@ export const routes = {
   userStats: '/dashboard/stats',
   userSettings: '/dashboard/settings',
   userSupport: '/dashboard/support',
+  userProfile: '/dashboard/profile',
   admin: '/admin',
   adminManageVaults: '/admin/manage-vaults',
   adminActivities: '/admin/activities',
   adminReviews: '/admin/reviews',
   adminMailbox: '/admin/mailbox',
   adminSettings: '/admin/settings',
+  adminProfile: '/admin/profile',
 } as const;
 
 export const FILE_TYPES = [

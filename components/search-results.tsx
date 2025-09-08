@@ -13,28 +13,34 @@ import Link from 'next/link';
 import { routes } from '@/lib/constants';
 import { env } from '@/env';
 import { Badge } from './ui/badge';
-import { Folder } from 'lucide-react';
+import { ExternalLink, Folder } from 'lucide-react';
 import { timeAgo } from '@/lib/utils';
 const baseUrl = env.NEXT_PUBLIC_APP_BASE_URL;
 
-type TSearchResultProps = Exclude<
-  Awaited<ReturnType<typeof searchVaultsByQuery>>,
-  null
->;
+type SearchResult = {
+  vaultName: string;
+  description: string | null;
+  files: string[];
+  vaultUrlID: string;
+  authorID: string | null;
+  authorName: string | null;
+  createdAt: string | null;
+};
+
 export default function SearchResults({
   results,
 }: {
-  results: TSearchResultProps;
+  results: SearchResult[];
 }) {
   return (
-    <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
+    <div className='gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3'>
       {results.map((result) => (
         <Card
           key={result.vaultUrlID}
-          className='overflow-hidden transition-all hover:shadow-md'
+          className='hover:shadow-md overflow-hidden transition-all'
         >
           <CardHeader className='pb-3'>
-            <div className='flex items-center justify-between'>
+            <div className='flex justify-between items-center'>
               <div className='flex items-center gap-2'>
                 {/* {getIconForType(result.type)} */}
                 <Folder className='text-primary' />
@@ -75,6 +81,7 @@ export default function SearchResults({
                 target='_blank'
                 href={`${baseUrl}/${routes.vaultRoute}/${result.vaultUrlID}`}
               >
+                <ExternalLink />
                 Open Vault
               </Link>
             </Button>

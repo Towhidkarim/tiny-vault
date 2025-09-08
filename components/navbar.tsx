@@ -26,7 +26,7 @@ const navItems = [
   { title: 'How to', url: '/how-to' },
   { title: 'Search', url: '/search' },
   { title: 'Reviews', url: '/reviews' },
-  { title: 'Contact Me', url: '/contact' },
+  { title: 'Contact Us', url: '/contact' },
 ];
 
 export default async function Navbar() {

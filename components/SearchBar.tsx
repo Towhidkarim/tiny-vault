@@ -2,12 +2,13 @@ import { Search } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 
-export function SearchBar() {
+export function SearchBar({ value }: { value?: string }) {
   return (
     <form action='/search' className='flex flex-row gap-0 my-3 px-2 w-full'>
       <Input
         name='query'
         type='text'
+        defaultValue={value ?? ''}
         minLength={3}
         required
         placeholder='Search vaults by name/user'

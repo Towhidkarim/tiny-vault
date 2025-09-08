@@ -62,6 +62,11 @@ const items: { title: string; url: string; icon: IconName }[] = [
     icon: 'Mail',
   },
   {
+    title: 'Profile',
+    url: routes.adminProfile,
+    icon: 'User',
+  },
+  {
     title: 'Settings',
     url: routes.adminSettings,
     icon: 'Settings',

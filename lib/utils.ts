@@ -15,6 +15,7 @@ import {
   ChartColumnBig,
   Star,
   Mail,
+  User2,
 } from 'lucide-react';
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -110,6 +111,7 @@ const iconMap = {
   ChartNoAxesGantt,
   ChartColumnBig,
   Star,
+  User2,
   Mail,
 };
 

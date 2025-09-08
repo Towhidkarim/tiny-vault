@@ -46,6 +46,11 @@ const items: { title: string; url: string; icon: IconName }[] = [
     icon: 'ChartNoAxesCombined',
   },
   {
+    title: 'Profile',
+    url: routes.userProfile,
+    icon: 'User',
+  },
+  {
     title: 'Support',
     url: routes.userSupport,
     icon: 'Heart',
