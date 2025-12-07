@@ -1,6 +1,7 @@
 import { FILE_TYPES } from '@/lib/constants';
 import { sql } from 'drizzle-orm';
 import { numeric, sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { nanoid } from 'nanoid';
 
 export const user = sqliteTable('user', {
   id: text('id').primaryKey(),
@@ -82,6 +83,14 @@ export const verification = sqliteTable('verification', {
 });
 
 text({ enum: FILE_TYPES });
+
+export const paymentTable = sqliteTable('tv_payment', {
+  id: text('id').primaryKey().notNull().default(nanoid(10)),
+  userId: text('userId').notNull(),
+  amount: numeric({ mode: 'number' }).notNull(),
+  paymentType: text({ mode: 'text', enum: ['premium'] }),
+  createdAt: integer({ mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
 
 export const filesTable = sqliteTable('tv_files', {
   id: text('id').primaryKey().notNull(),

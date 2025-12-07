@@ -1,5 +1,5 @@
 import { db } from '@/db';
-import { filesTable, vaultsTable } from '@/db/schema';
+import { filesTable, paymentTable, vaultsTable } from '@/db/schema';
 import { auth } from '@/lib/auth';
 import { formatFileSize, timeAgo } from '@/lib/utils';
 import { eq, sum } from 'drizzle-orm';
@@ -18,13 +18,11 @@ import {
 } from '@/components/ui/table';
 import {
   HardDrive,
-  FolderOpen,
   Crown,
   Eye,
   EyeOff,
   FileText,
   Vault,
-  ExternalLink,
   Lock,
 } from 'lucide-react';
 import { getVaultsByUserID } from '@/data-access/queries/vaults';
@@ -34,12 +32,13 @@ import Link from 'next/link';
 import LinkButton from '@/components/layout/dashboard/link-button';
 import { VaultView } from '@/components/layout/dashboard/view-vault';
 import VaultEditDialog from '@/components/features/edit-vault/vault-edit-dialog';
+import { routes } from '@/lib/constants';
 
-const storageData = {
-  used: '2.4 GB',
-  total: '5 GB',
-  percentage: 48,
-};
+// const storageData = {
+//   used: '2.4 GB',
+//   total: '5 GB',
+//   percentage: 48,
+// };
 
 export default async function page() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -53,6 +52,10 @@ export default async function page() {
     .where(eq(vaultsTable.vaultAuthorID, session.user.id));
 
   const vaults = await getVaultsByUserID(session.user.id);
+  const premiumStatus = await db
+    .select()
+    .from(paymentTable)
+    .where(eq(paymentTable.userId, session.user.id));
 
   return (
     <main className='mx-auto w-7xl max-w-[90svw]'>
@@ -80,7 +83,7 @@ export default async function page() {
                 {formatFileSize(Number(storageUsage.totalBytes))}
               </div>
               <div className='flex items-center space-x-2 mt-2'>
-                <div className='flex-1 bg-muted rounded-full h-2'>
+                <div className='flex-1 gap-3 bg-muted rounded-full h-2'>
                   <div
                     className='bg-primary rounded-full h-2 transition-all duration-300'
                     style={{
@@ -89,7 +92,14 @@ export default async function page() {
                   />
                 </div>
                 <span className='text-muted-foreground text-xs'>
-                  of {`100 MB`}
+                  {premiumStatus.length === 0 ? (
+                    '100MB'
+                  ) : (
+                    <span className='flex flex-row gap-1'>
+                      200MB
+                      <Crown className='w-4 h-4 text-primary' />
+                    </span>
+                  )}
                 </span>
               </div>
             </CardContent>
@@ -119,22 +129,69 @@ export default async function page() {
               <CardTitle className='font-medium text-card-foreground text-sm'>
                 Current Plan
               </CardTitle>
-              <Crown className='w-4 h-4 text-accent' />
+              <Button variant='ghost' asChild>
+                <Link
+                  href={`${routes.payment}?paymentType=premium`}
+                  target='_blank'
+                >
+                  <div className='flex flex-row gap-1'>
+                    <span className='text-xs'>Get Premium Now!</span>
+                    <Crown className='w-4 h-4 text-primary' />
+                  </div>
+                </Link>
+              </Button>
             </CardHeader>
             <CardContent>
-              <div className='flex items-center space-x-2'>
-                <div className='font-bold text-card-foreground text-2xl'>
-                  Free
-                </div>
-                <Badge
-                  variant='secondary'
-                  className='bg-secondary text-secondary-foreground'
-                >
-                  Active
-                </Badge>
+              <div className='flex items-center'>
+                {premiumStatus.length === 0 ? (
+                  <div className='flex items-center gap-3 bg-card shadow-sm px-4 py-2 border border-border rounded-xl'>
+                    <div className='flex flex-col leading-tight'>
+                      <span className='text-muted-foreground text-xs uppercase tracking-wide'>
+                        Current Plan
+                      </span>
+                      <span className='font-bold text-card-foreground text-xl'>
+                        Free Plan
+                      </span>
+                    </div>
+
+                    <Badge
+                      variant='secondary'
+                      className='bg-secondary/80 ml-2 text-secondary-foreground'
+                    >
+                      Active
+                    </Badge>
+                  </div>
+                ) : (
+                  <div className='flex items-center gap-4 bg-gradient-to-br from-yellow-500/20 to-yellow-400/10 shadow-md px-5 py-3 border border-yellow-500/40 rounded-xl'>
+                    <div className='flex flex-col leading-tight'>
+                      <span className='text-yellow-600/80 text-xs uppercase tracking-wide'>
+                        Current Plan
+                      </span>
+                      <span className='font-bold text-yellow-600 text-2xl'>
+                        Premium
+                      </span>
+                    </div>
+
+                    <Badge className='bg-yellow-500 shadow-sm font-semibold text-black'>
+                      Active
+                    </Badge>
+
+                    <div className='flex justify-center items-center bg-black/10 px-3 rounded-full h-7 font-bold text-yellow-700 text-xs'>
+                      {premiumStatus.length}x
+                    </div>
+                  </div>
+                )}
               </div>
+
               <p className='mt-2 text-muted-foreground text-xs'>
-                Upgrade for more storage
+                Upgrades for more support, get{' '}
+                <Link
+                  href={`${routes.payment}?paymentType=premium`}
+                  className='underline'
+                >
+                  More
+                </Link>{' '}
+                now
               </p>
             </CardContent>
           </Card>

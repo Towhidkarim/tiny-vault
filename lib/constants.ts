@@ -28,12 +28,13 @@ export const trimedExtensionList = [
   "txt", "csv", "json", "xml",
   "js", "ts", "jsx", "tsx", "html", "htm", "css", "scss",
    "yaml", "ini", "toml",
-  "py", "cpp", "c", "h", "hpp", "java", "kt", "rs", "go", "swift", "php",
+  "py", "cpp", "c", "h", "hpp", "java", "kt", "rs", "go", "swift", "php", "sql",
   "dart", "cs", "fs", "fsi", "fsharp",
   "asm", "s", "tsv", "toml", "cfg",
 ]
 
 export const routes = {
+  payment: '/payment',
   vaultRoute: '/vault',
   signIn: '/signin',
   signUp: '/signup',
@@ -60,6 +61,8 @@ export const FILE_TYPES = [
   'audio',
   'other',
 ] as const;
+
+export const PREMIUM_PRICE = 5; //usd
 
 export const QUERY_KEYS = {
   textFiles: 'text-file',
