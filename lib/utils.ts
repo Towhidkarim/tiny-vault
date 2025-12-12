@@ -16,6 +16,7 @@ import {
   Star,
   Mail,
   User2,
+  ScrollText,
 } from 'lucide-react';
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -113,6 +114,7 @@ const iconMap = {
   Star,
   User2,
   Mail,
+  ScrollText,
 };
 
 export type IconName = keyof typeof iconMap;

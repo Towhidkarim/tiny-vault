@@ -71,7 +71,9 @@ export default async function page() {
       <div className='space-y-8 mx-auto w-full'>
         {/* Header */}
         <div className='space-y-2'>
-          <h1 className='font-bold text-foreground text-3xl'>Dashboard</h1>
+          <h1 className='font-bold text-foreground text-3xl'>
+            Admin Dashboard
+          </h1>
           <p className='text-muted-foreground'>
             Manage your vaults and monitor storage usage
           </p>
@@ -83,7 +85,7 @@ export default async function page() {
           <Card className='bg-card border-border'>
             <CardHeader className='flex flex-row justify-between items-center space-y-0 pb-2'>
               <CardTitle className='font-medium text-card-foreground text-sm'>
-                Storage Used
+                Global Storage Used
               </CardTitle>
               <HardDrive className='w-4 h-4 text-primary' />
             </CardHeader>
@@ -193,7 +195,7 @@ export default async function page() {
                         <VaultView
                           vaultData={vault}
                           key={vault.id}
-                          authorName={session.user.name}
+                          authorName={vault.vaultAuthorID ?? 'Anonymous'}
                         />
                       </div>
                     </TableCell>

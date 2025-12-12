@@ -146,5 +146,33 @@ export const supportMessageTable = sqliteTable('tv_supportMessage', {
   createdAt: text('createdAt').default(sql`(current_timestamp)`),
 });
 
+export const logMessageTable = sqliteTable('tv_logMessage', {
+  id: text('id')
+    .primaryKey()
+    .notNull()
+    .$defaultFn(() => nanoid(10)),
+  associatedVaultId: text('associatedVaultId'),
+  associatedUserEmail: text('associatedUserEmail'),
+  associatedUserId: text('associatedUserId'),
+  logType: text('logType', {
+    mode: 'text',
+    enum: ['ADMIN_LOG', 'NOTIFICATION'],
+  }),
+  logText: text('logText'),
+  logActivityType: text('logActivityType', {
+    mode: 'text',
+    enum: [
+      'VAULT_CREATION',
+      'VAULT_EDIT',
+      'SUPPORT_MESSAGE',
+      'PENDING_REVIEW',
+      'COMMENT',
+      'USER_SIGN_UP',
+      'ERROR',
+    ],
+  }),
+  createdAt: integer({ mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
+
 export type TValultsTable = typeof vaultsTable.$inferSelect;
 export type TReviews = typeof reviewsTable.$inferInsert;

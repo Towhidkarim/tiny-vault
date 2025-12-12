@@ -1,6 +1,6 @@
 'use server';
 
-import { TValultsTable, vaultsTable } from '@/db/schema';
+import { logMessageTable, TValultsTable, vaultsTable } from '@/db/schema';
 import { auth } from '../auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -25,15 +25,26 @@ export default async function UpdateVaultAction({
   //   const { password, vaultName, visibility, vaultDescription } = vaultData;
 
   try {
-    await db
-      .update(vaultsTable)
-      .set({
-        vaultName,
-        password,
-        visibility,
-        vaultDescription,
-      })
-      .where(eq(vaultsTable.id, vaultID));
+    await db.batch([
+      db
+        .update(vaultsTable)
+        .set({
+          vaultName,
+          password,
+          visibility,
+          vaultDescription,
+        })
+        .where(eq(vaultsTable.id, vaultID)),
+      db.insert(logMessageTable).values({
+        associatedUserEmail: session.user.email,
+        associatedUserId: session.user.id,
+        associatedVaultId: vaultID,
+        logActivityType: 'VAULT_EDIT',
+        logType: 'ADMIN_LOG',
+        logText: 'Vault has been updated',
+      }),
+    ]);
+
     return { success: true, message: 'Vault Updated successfully!' };
   } catch (error) {
     return { success: false, message: 'An error occured' };

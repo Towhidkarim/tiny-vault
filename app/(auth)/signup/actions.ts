@@ -5,11 +5,11 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { SignUpSchema } from '@/lib/typeschema/forms';
 import { db } from '@/db';
-import { user } from '@/db/schema';
+import { logMessageTable, user } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
 export async function SignUpAction(
-  formData: z.infer<typeof SignUpSchema>,
+  formData: z.infer<typeof SignUpSchema>
 ): Promise<
   { success: false; error: string } | { success: true; message: string }
 > {
@@ -37,10 +37,23 @@ export async function SignUpAction(
         password: parsedData.data.password,
       },
     });
-    if (registration.user) return { success: true, message: 'Done' };
-    else return { success: false, error: 'Something went wrong' };
+    if (registration.user) {
+      await db.insert(logMessageTable).values({
+        associatedUserEmail: registration.user.email,
+        associatedUserId: registration.user.id,
+        logActivityType: 'USER_SIGN_UP',
+        logType: 'ADMIN_LOG',
+        logText: 'New user has signed up',
+      });
+      return { success: true, message: 'Done' };
+    } else return { success: false, error: 'Something went wrong' };
   } catch (error) {
     console.error(error);
+    await db.insert(logMessageTable).values({
+      logText: 'An error occured during signup',
+      logType: 'ADMIN_LOG',
+      logActivityType: 'ERROR',
+    });
     return { success: false, error: 'Server Error' };
   }
 }

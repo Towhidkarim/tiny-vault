@@ -52,6 +52,11 @@ const items: { title: string; url: string; icon: IconName }[] = [
     icon: 'ChartColumnBig',
   },
   {
+    title: 'Logs',
+    url: routes.adminLogs,
+    icon: 'ScrollText',
+  },
+  {
     title: 'Reviews',
     url: routes.adminReviews,
     icon: 'Star',

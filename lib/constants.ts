@@ -52,6 +52,7 @@ export const routes = {
   adminMailbox: '/admin/mailbox',
   adminSettings: '/admin/settings',
   adminProfile: '/admin/profile',
+  adminLogs: '/admin/logs',
 } as const;
 
 export const FILE_TYPES = [

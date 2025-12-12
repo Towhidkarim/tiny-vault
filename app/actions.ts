@@ -6,21 +6,21 @@ import {
 } from '@/lib/auth/identification';
 import { nanoid } from 'nanoid';
 import { headers, cookies } from 'next/headers';
-import { UTFile } from 'uploadthing/server';
 import { Redis } from '@upstash/redis';
 import tryCatch from '@/lib/try-catch';
 import { cookieKeys, redisKeys } from '@/lib/constants';
 import { db } from '@/db';
 import {
   filesTable,
+  logMessageTable,
   TFilesTable,
   TValultsTable,
   vaultsTable,
 } from '@/db/schema';
-import { inArray } from 'drizzle-orm';
 import { z } from 'zod';
 import { defaultUploadFormSchema } from '@/lib/typeschema/forms';
 import { auth } from '@/lib/auth';
+import { revalidatePath } from 'next/cache';
 
 //Called before Upload is started
 export async function inititePublicVaultCreation() {
@@ -32,7 +32,7 @@ export async function inititePublicVaultCreation() {
     const jwt = await generateIdentifierToken({ headerImprint, uniqueID });
 
     const { result: redis, error } = await tryCatch(async () =>
-      Redis.fromEnv(),
+      Redis.fromEnv()
     );
     if (error) return { succes: false, error: 'Server Redis error' };
 
@@ -55,7 +55,7 @@ export async function inititePublicVaultCreation() {
 
 //called after the uploads have been finished
 export async function finalizePublicVaultCreation(
-  rawVaultData: z.infer<typeof defaultUploadFormSchema>,
+  rawVaultData: z.infer<typeof defaultUploadFormSchema>
 ): Promise<
   | { success: true; vaultURLIdentifier: string }
   | { success: false; error: string }
@@ -84,7 +84,7 @@ export async function finalizePublicVaultCreation(
   const { result: redis, error } = await tryCatch(async () => Redis.fromEnv());
   if (error) return { success: false, error: 'Server Redis error' };
   const redisResults = (await redis.smembers(
-    `${redisKeys.publicValut}:${uniqueID}`,
+    `${redisKeys.publicValut}:${uniqueID}`
   )) as TFilesTable[];
   if (!redisResults || redisResults.length === 0)
     return { success: false, error: 'No vault data found' };
@@ -115,6 +115,15 @@ export async function finalizePublicVaultCreation(
         .insert(vaultsTable)
         .values(extendedVaultData)
         .onConflictDoNothing();
+
+      await tx.insert(logMessageTable).values({
+        associatedUserEmail: session?.user.email ?? null,
+        associatedUserId: session?.user.id ?? null,
+        associatedVaultId: uniqueID,
+        logText: 'A new vault has been created',
+        logType: 'ADMIN_LOG',
+        logActivityType: 'VAULT_CREATION',
+      });
     });
 
     await redis.del(`${redisKeys.publicValut}:${uniqueID}`);

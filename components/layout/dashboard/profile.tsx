@@ -7,6 +7,7 @@ import { headers } from 'next/headers';
 import { db } from '@/db';
 import { filesTable, vaultsTable } from '@/db/schema';
 import { count, countDistinct, eq } from 'drizzle-orm';
+import { EditUsernameDialog } from './edit-username-dialog';
 
 export default async function ProfilePage() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -42,9 +43,14 @@ export default async function ProfilePage() {
                   <User className='w-12 h-12 text-muted-foreground' />
                 </div>
               </Avatar>
-              <h2 className='mb-2 font-semibold text-2xl'>
-                {session.user.name || 'User'}
-              </h2>
+              <div className='flex justify-center items-center gap-2 p-1'>
+                <h2 className='mb-2 font-semibold text-2xl translate-x-2'>
+                  {session.user.name || 'User'}
+                </h2>
+                <EditUsernameDialog
+                  currentUsername={session.user.name || 'User'}
+                />
+              </div>
               <Badge variant='secondary' className='mb-4 capitalize'>
                 {session.user.role || 'Member'}
               </Badge>
